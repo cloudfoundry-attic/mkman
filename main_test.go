@@ -122,11 +122,11 @@ var _ = Describe("Executing binary", func() {
 		})
 
 		AfterEach(func() {
-			// err := os.RemoveAll(tempDirPath)
-			// Expect(err).ShouldNot(HaveOccurred())
+			err := os.RemoveAll(tempDirPath)
+			Expect(err).ShouldNot(HaveOccurred())
 		})
 
-		FIt("creates manifest without error", func() {
+		It("creates manifest without error", func() {
 			command := exec.Command(binPath, args...)
 			session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 			Expect(err).NotTo(HaveOccurred())
