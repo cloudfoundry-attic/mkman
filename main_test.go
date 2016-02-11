@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"go.pedge.io/pkg/yaml"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
@@ -100,9 +102,8 @@ var _ = Describe("Executing binary", func() {
 
 			configPath = filepath.Join(tempDirPath, "config.json")
 
-			cfReleasePath := "/Users/robdimsdale/workspace/cf-release"
-			stemcellPath := "/Users/robdimsdale/Downloads/bosh-stemcell-2776-warden-boshlite-ubuntu-trusty-go_agent.tgz"
-			stubsPath := "/Users/robdimsdale/workspace/cf-deployment/spec/assets/stub.yml"
+			stemcellPath := filepath.Join(fixturesDir, "no-image-stemcell.tgz")
+			stubsPath := filepath.Join(fixturesDir, "stub.yml")
 
 			configPathContents := fmt.Sprintf(`
 {
@@ -134,6 +135,21 @@ var _ = Describe("Executing binary", func() {
 
 			Eventually(session, executableTimeout).Should(gexec.Exit(0))
 			Expect(session.Out).To(gbytes.Say("creating manifests from: %s", configPath))
+
+			actualManifestContents, err := ioutil.ReadFile(outputManifestPath)
+			Expect(err).NotTo(HaveOccurred())
+
+			actualManifestJSON, err := pkgyaml.ToJSON(actualManifestContents, pkgyaml.ToJSONOptions{})
+			Expect(err).NotTo(HaveOccurred())
+
+			expectedManifestPath := filepath.Join(fixturesDir, "manifest.yml")
+			expectedManifestContents, err := ioutil.ReadFile(expectedManifestPath)
+			Expect(err).NotTo(HaveOccurred())
+
+			expectedManifestJSON, err := pkgyaml.ToJSON(expectedManifestContents, pkgyaml.ToJSONOptions{})
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(actualManifestJSON).To(MatchJSON(expectedManifestJSON))
 		})
 
 		XContext("when path is not provided", func() {
