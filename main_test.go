@@ -80,4 +80,28 @@ var _ = Describe("Executing binary", func() {
 			Expect(session.Err).To(gbytes.Say("Unknown command"))
 		})
 	})
+
+	Describe("create-manifests", func() {
+		BeforeEach(func() {
+			args = []string{"create-manifests"}
+		})
+
+		Context("with path to config", func() {
+			var path string
+
+			BeforeEach(func() {
+				path = "/path/to/config"
+				args = append(args, path)
+			})
+
+			It("exits successfully", func() {
+				command := exec.Command(binPath, args...)
+				session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+				Expect(err).NotTo(HaveOccurred())
+
+				Eventually(session, executableTimeout).Should(gexec.Exit(0))
+				Expect(session.Out).To(gbytes.Say("creating manifests from: %s", path))
+			})
+		})
+	})
 })
