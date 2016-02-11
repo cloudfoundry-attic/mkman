@@ -26,11 +26,6 @@ var _ = BeforeSuite(func() {
 	testDir := getDirOfCurrentFile()
 	fixturesDir = filepath.Join(testDir, "fixtures")
 
-	By("Locating output manifest path")
-	outputsDir := filepath.Join(testDir, "outputs")
-	manifestsDir := filepath.Join(outputsDir, "manifests")
-	outputManifestPath = filepath.Join(manifestsDir, "cf.yml")
-
 	By("Ensuring $CF_RELEASE_DIR is set")
 	cfReleasePath = os.Getenv("CF_RELEASE_DIR")
 	Expect(cfReleasePath).NotTo(BeEmpty(), "$CF_RELEASE_DIR must be provided")
@@ -39,6 +34,12 @@ var _ = BeforeSuite(func() {
 	var err error
 	binPath, err = gexec.Build("github.com/pivotal-cf-experimental/mkman", "-race")
 	Expect(err).ShouldNot(HaveOccurred())
+
+	By("Locating output manifest path")
+	binDir := filepath.Dir(binPath)
+	outputsDir := filepath.Join(binDir, "outputs")
+	manifestsDir := filepath.Join(outputsDir, "manifests")
+	outputManifestPath = filepath.Join(manifestsDir, "cf.yml")
 })
 
 var _ = AfterSuite(func() {

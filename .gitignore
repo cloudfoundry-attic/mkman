@@ -27,3 +27,6 @@ mkman
 
 outputs
 tmp
+
+fixtures/manifest.yml
+fixtures/manifest.yml.tmp

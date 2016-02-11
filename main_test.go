@@ -8,8 +8,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"go.pedge.io/pkg/yaml"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
@@ -124,8 +122,8 @@ var _ = Describe("Executing binary", func() {
 		})
 
 		AfterEach(func() {
-			err := os.RemoveAll(tempDirPath)
-			Expect(err).ShouldNot(HaveOccurred())
+			// err := os.RemoveAll(tempDirPath)
+			// Expect(err).ShouldNot(HaveOccurred())
 		})
 
 		FIt("creates manifest without error", func() {
@@ -136,20 +134,15 @@ var _ = Describe("Executing binary", func() {
 			Eventually(session, executableTimeout).Should(gexec.Exit(0))
 			Expect(session.Out).To(gbytes.Say("creating manifests from: %s", configPath))
 
-			actualManifestContents, err := ioutil.ReadFile(outputManifestPath)
-			Expect(err).NotTo(HaveOccurred())
-
-			actualManifestJSON, err := pkgyaml.ToJSON(actualManifestContents, pkgyaml.ToJSONOptions{})
-			Expect(err).NotTo(HaveOccurred())
-
 			expectedManifestPath := filepath.Join(fixturesDir, "manifest.yml")
-			expectedManifestContents, err := ioutil.ReadFile(expectedManifestPath)
+
+			diffCommand := exec.Command("diff", "-C3", outputManifestPath, expectedManifestPath)
+			diffSession, err := gexec.Start(diffCommand, GinkgoWriter, GinkgoWriter)
 			Expect(err).NotTo(HaveOccurred())
 
-			expectedManifestJSON, err := pkgyaml.ToJSON(expectedManifestContents, pkgyaml.ToJSONOptions{})
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(actualManifestJSON).To(MatchJSON(expectedManifestJSON))
+			Eventually(diffSession).Should(gexec.Exit())
+			Expect(diffSession.Out.Contents()).To(BeEmpty())
+			Expect(diffSession.Err.Contents()).To(BeEmpty())
 		})
 
 		XContext("when path is not provided", func() {

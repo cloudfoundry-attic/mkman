@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/pivotal-cf-experimental/mkman/config"
+	"github.com/pivotal-cf-experimental/mkman/release"
 	"github.com/pivotal-cf-experimental/mkman/stemcell"
 
 	"gopkg.in/yaml.v2"
@@ -59,9 +60,23 @@ func (command *CreateManifestsCommand) Execute(args []string) error {
 
 	fmt.Printf("@@@ Debug stemcellStubPath: %s\n", stemcellStubPath)
 
+	fmt.Printf("@@@ DEBUG reading release contents from path: %s\n", config.CFPath)
+	releaseStubContents, err := release.StubFromReleasePath(config.CFPath)
+	if err != nil {
+		panic(err)
+	}
+
+	releaseStubPath := filepath.Join(intermediateDir, "releases.yml")
+	fmt.Printf("@@@ DEBUG writing release stub: %s\n", releaseStubPath)
+	err = ioutil.WriteFile(releaseStubPath, []byte(releaseStubContents), os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+
 	var stubPaths []string
 	var cmdArgs []string
 
+	stubPaths = append(stubPaths, releaseStubPath)
 	stubPaths = append(stubPaths, stemcellStubPath)
 	stubPaths = append(stubPaths, config.StubPaths...)
 
