@@ -3,7 +3,6 @@ package commands
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -32,23 +31,27 @@ func (command *CreateManifestsCommand) Execute(args []string) error {
 		panic(err)
 	}
 
+	fmt.Printf("@@@ DEBUG unmarshalling config\n")
 	config := config.Config{}
 	err = yaml.Unmarshal(configFileContents, &config)
 	if err != nil {
-		log.Fatalf("error: %v", err)
+		panic(err)
 	}
 
+	fmt.Printf("@@@ DEBUG creating temp dir\n")
 	intermediateDir, err := ioutil.TempDir("", "")
 	if err != nil {
 		panic(err)
 	}
 
+	fmt.Printf("@@@ DEBUG reading stemcell contents from path: %s\n", config.StemcellPath)
 	stemcellStubContents, err := stemcell.StubFromTar(config.StemcellPath)
 	if err != nil {
 		panic(err)
 	}
 
 	stemcellStubPath := filepath.Join(intermediateDir, "stemcell.yml")
+	fmt.Printf("@@@ DEBUG writing stemcell stub: %s\n", stemcellStubPath)
 	err = ioutil.WriteFile(stemcellStubPath, []byte(stemcellStubContents), os.ModePerm)
 	if err != nil {
 		panic(err)

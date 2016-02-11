@@ -1,6 +1,7 @@
 package stemcell
 
 import (
+	"fmt"
 	"path/filepath"
 
 	"github.com/pivotal-cf-experimental/mkman/tar"
@@ -9,20 +10,20 @@ import (
 )
 
 func StubFromTar(stemcellPath string) (string, error) {
+	fmt.Printf("@@@ DEBUG tar looking for stemcell.MF\n")
 	manifestContents, err := tar.ReadFileContentsFromTar(stemcellPath, "stemcell.MF")
 	if err != nil {
 		panic(err)
 	}
 
-	// fmt.Printf("%s\n", string(manifestContents))
+	fmt.Printf("@@@ DEBUG manifest contents: %s\n", string(manifestContents))
 	manifest := stemcellManifest{}
 	err = yaml.Unmarshal(manifestContents, &manifest)
 	if err != nil {
 		panic(err)
 	}
-	// fmt.Printf("%+v\n", manifest)
-	return stub(
 
+	return stub(
 		manifest.Name,
 		manifest.Version,
 		stemcellPath,
