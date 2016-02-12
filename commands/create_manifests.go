@@ -18,6 +18,10 @@ type CreateManifestsCommand struct {
 }
 
 func (command *CreateManifestsCommand) Execute(args []string) error {
+	if len(args) < 1 {
+		return fmt.Errorf("create-manifests requires PATH_TO_CONFIG")
+	}
+
 	mydir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		panic(err)
@@ -29,7 +33,7 @@ func (command *CreateManifestsCommand) Execute(args []string) error {
 
 	configFileContents, err := ioutil.ReadFile(args[0])
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("error: %s\n", err.Error())
 	}
 
 	fmt.Printf("@@@ DEBUG unmarshalling config\n")

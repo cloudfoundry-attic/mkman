@@ -145,12 +145,34 @@ var _ = Describe("Executing binary", func() {
 			Expect(diffSession.Err.Contents()).To(BeEmpty())
 		})
 
-		XContext("when path is not provided", func() {
+		Context("when path is not provided", func() {
+			BeforeEach(func() {
+				args = []string{args[0]}
+			})
 
+			It("exits with error", func() {
+				command := exec.Command(binPath, args...)
+				session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+				Expect(err).NotTo(HaveOccurred())
+
+				Eventually(session, executableTimeout).Should(gexec.Exit(1))
+				Expect(session.Err).To(gbytes.Say("error: create-manifests requires PATH_TO_CONFIG"))
+			})
 		})
 
-		XContext("when path is not valid", func() {
+		Context("when path is not valid", func() {
+			BeforeEach(func() {
+				args[1] = "/bad/path"
+			})
 
+			It("exits with error", func() {
+				command := exec.Command(binPath, args...)
+				session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+				Expect(err).NotTo(HaveOccurred())
+
+				Eventually(session, executableTimeout).Should(gexec.Exit(1))
+				Expect(session.Err).To(gbytes.Say("error: open /bad/path: no such file or directory"))
+			})
 		})
 	})
 })
