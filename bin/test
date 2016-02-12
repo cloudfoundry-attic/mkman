@@ -13,7 +13,9 @@ mkdir -p "${CF_RELEASE_DIR}"
 
 pushd "${CF_RELEASE_DIR}" > /dev/null
 git remote -v | grep 'cf-release' || \
-  (git clone https://github.com/cloudfoundry/cf-release . && ./scripts/update)
+  (git clone https://github.com/cloudfoundry/cf-release . \
+  && git checkout develop \
+  && ./scripts/update)
 popd > /dev/null
 
 fixtures_dir="$( cd "${base_dir}/fixtures" && pwd )"
