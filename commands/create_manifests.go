@@ -43,7 +43,7 @@ func (command *CreateManifestsCommand) Execute(args []string) error {
 
 	manifest, err := manifestGenerator.GenerateManifest()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if command.OutputWriter == nil {
@@ -51,8 +51,5 @@ func (command *CreateManifestsCommand) Execute(args []string) error {
 	}
 
 	_, err = fmt.Fprintf(command.OutputWriter, manifest)
-	if err != nil {
-		panic(err)
-	}
-	return nil
+	return err
 }

@@ -27,6 +27,8 @@ var _ = Describe("CreateManifestsCommand", func() {
 		outputManifest      *bytes.Buffer
 		fixturesDir         string
 		exampleManifestPath string
+		stemcellPath        string
+		stubPath            string
 	)
 
 	BeforeEach(func() {
@@ -48,14 +50,14 @@ var _ = Describe("CreateManifestsCommand", func() {
 		Expect(err).NotTo(HaveOccurred())
 		templateContents2 := strings.Replace(string(templateContents), "$CF_RELEASE_DIR", cfReleasePath, -1)
 
-		stemcellPath := filepath.Join(fixturesDir, "no-image-stemcell.tgz")
+		stemcellPath = filepath.Join(fixturesDir, "no-image-stemcell.tgz")
 		templateContents3 := strings.Replace(string(templateContents2), "$STEMCELL_PATH", stemcellPath, -1)
 
 		exampleManifestPath = filepath.Join(tempDirPath, "manifest.yml")
 		err = ioutil.WriteFile(exampleManifestPath, []byte(templateContents3), os.ModePerm)
 		Expect(err).NotTo(HaveOccurred())
 
-		stubPath := filepath.Join(fixturesDir, "stub.yml")
+		stubPath = filepath.Join(fixturesDir, "stub.yml")
 
 		configPathContents = fmt.Sprintf(`
 cf: %s
@@ -140,14 +142,37 @@ stubs:
 		})
 	})
 
-	Context("when the OutputWriter is not provided", func() {
+	Context("when the manifest generator returns an error", func() {
 		BeforeEach(func() {
-			cmd = commands.CreateManifestsCommand{}
+			// force an error by giving a bad cfReleasePath
+			configPathContents = fmt.Sprintf(`
+cf: /not/a/valid/path
+stemcell: %s
+stubs:
+- %s
+`,
+				stemcellPath,
+				stubPath,
+			)
 		})
 
-		It("defaults the writer to stdout", func() {
-			cmd.Execute(args)
-			Expect(cmd.OutputWriter).To(Equal(os.Stdout))
+		It("forwards the error", func() {
+			err := cmd.Execute(args)
+			Expect(err).To(HaveOccurred())
+		})
+	})
+
+	Context("when writing the output fails", func() {
+		BeforeEach(func() {
+			cmd = commands.CreateManifestsCommand{
+				OutputWriter: &alwaysErrorWriter{},
+			}
+		})
+
+		It("forwards the error", func() {
+			err := cmd.Execute(args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(Equal("writer error"))
 		})
 	})
 })
@@ -155,4 +180,10 @@ stubs:
 func getDirOfCurrentFile() string {
 	_, filename, _, _ := runtime.Caller(1)
 	return path.Dir(filename)
+}
+
+type alwaysErrorWriter struct{}
+
+func (w *alwaysErrorWriter) Write(p []byte) (int, error) {
+	return 0, fmt.Errorf("writer error")
 }
