@@ -18,19 +18,6 @@ git remote -v | grep 'cf-release' || \
   && ./scripts/update)
 popd > /dev/null
 
-fixtures_dir="$( cd "${base_dir}/fixtures" && pwd )"
-stemcell_path="${fixtures_dir}/no-image-stemcell.tgz"
-
-# Replace $CF_RELEASE_DIR in template with actual value
-sed \
-  "s@\$CF_RELEASE_DIR@${CF_RELEASE_DIR}@" \
-  "${fixtures_dir}/manifest.yml.template" > "${fixtures_dir}/manifest.yml.tmp"
-
-# Replace $CF_RELEASE_DIR in template with actual value
-sed \
-  "s@\$STEMCELL_PATH@${stemcell_path}@" \
-  "${fixtures_dir}/manifest.yml.tmp" > "${fixtures_dir}/manifest.yml"
-
 pushd "${base_dir}" > /dev/null
   ginkgo \
     -p \

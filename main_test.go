@@ -8,6 +8,7 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -89,9 +90,10 @@ var _ = Describe("Executing binary", func() {
 
 	Describe("create-manifests", func() {
 		var (
-			tempDirPath string
-			configPath  string
-			fixturesDir string
+			tempDirPath         string
+			configPath          string
+			fixturesDir         string
+			exampleManifestPath string
 		)
 
 		BeforeEach(func() {
@@ -103,15 +105,28 @@ var _ = Describe("Executing binary", func() {
 			cfReleasePath := os.Getenv("CF_RELEASE_DIR")
 			Expect(cfReleasePath).NotTo(BeEmpty(), "$CF_RELEASE_DIR must be provided")
 
-			args = []string{"create-manifests"}
-
 			var err error
 			tempDirPath, err = ioutil.TempDir("", "")
 			Expect(err).NotTo(HaveOccurred())
 
-			configPath = filepath.Join(tempDirPath, "config.json")
+			By("Creating manifest template")
+			manifestTemplatePath := filepath.Join(fixturesDir, "manifest.yml.template")
+			templateContents, err := ioutil.ReadFile(manifestTemplatePath)
+			Expect(err).NotTo(HaveOccurred())
+			templateContents2 := strings.Replace(string(templateContents), "$CF_RELEASE_DIR", cfReleasePath, -1)
 
 			stemcellPath := filepath.Join(fixturesDir, "no-image-stemcell.tgz")
+			templateContents3 := strings.Replace(string(templateContents2), "$STEMCELL_PATH", stemcellPath, -1)
+
+			exampleManifestPath = filepath.Join(tempDirPath, "manifest.yml")
+			err = ioutil.WriteFile(exampleManifestPath, []byte(templateContents3), os.ModePerm)
+			Expect(err).NotTo(HaveOccurred())
+
+			By("Writing config paths")
+			args = []string{"create-manifests"}
+
+			configPath = filepath.Join(tempDirPath, "config.json")
+
 			stubPath := filepath.Join(fixturesDir, "stub.yml")
 
 			configPathContents := fmt.Sprintf(`
@@ -145,13 +160,11 @@ var _ = Describe("Executing binary", func() {
 			Eventually(session, executableTimeout).Should(gexec.Exit(0))
 			manifest := session.Out.Contents()
 
-			expectedManifestPath := filepath.Join(fixturesDir, "manifest.yml")
-
 			manifestPath := filepath.Join(tempDirPath, "output_manifest.yml")
 			err = ioutil.WriteFile(manifestPath, manifest, os.ModePerm)
 			Expect(err).NotTo(HaveOccurred())
 
-			diffCommand := exec.Command("diff", "-C3", manifestPath, expectedManifestPath)
+			diffCommand := exec.Command("diff", "-C3", manifestPath, exampleManifestPath)
 			diffSession, err := gexec.Start(diffCommand, GinkgoWriter, GinkgoWriter)
 			Expect(err).NotTo(HaveOccurred())
 

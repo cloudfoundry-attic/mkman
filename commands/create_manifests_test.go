@@ -9,6 +9,7 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -18,29 +19,42 @@ import (
 
 var _ = Describe("CreateManifestsCommand", func() {
 	var (
-		args               []string
-		cmd                commands.CreateManifestsCommand
-		configPathContents string
-		configPath         string
-		tempDirPath        string
-		outputManifest     *bytes.Buffer
-		fixturesDir        string
+		args                []string
+		cmd                 commands.CreateManifestsCommand
+		configPathContents  string
+		configPath          string
+		tempDirPath         string
+		outputManifest      *bytes.Buffer
+		fixturesDir         string
+		exampleManifestPath string
 	)
 
 	BeforeEach(func() {
-		By("Ensuring $CF_RELEASE_DIR is set")
-		cfReleasePath := os.Getenv("CF_RELEASE_DIR")
-		Expect(cfReleasePath).NotTo(BeEmpty(), "$CF_RELEASE_DIR must be provided")
-
 		By("Locating fixtures dir")
 		testDir := getDirOfCurrentFile()
 		fixturesDir = filepath.Join(testDir, "..", "fixtures")
+
+		By("Ensuring $CF_RELEASE_DIR is set")
+		cfReleasePath := os.Getenv("CF_RELEASE_DIR")
+		Expect(cfReleasePath).NotTo(BeEmpty(), "$CF_RELEASE_DIR must be provided")
 
 		var err error
 		tempDirPath, err = ioutil.TempDir("", "")
 		Expect(err).NotTo(HaveOccurred())
 
+		By("Creating manifest template")
+		manifestTemplatePath := filepath.Join(fixturesDir, "manifest.yml.template")
+		templateContents, err := ioutil.ReadFile(manifestTemplatePath)
+		Expect(err).NotTo(HaveOccurred())
+		templateContents2 := strings.Replace(string(templateContents), "$CF_RELEASE_DIR", cfReleasePath, -1)
+
 		stemcellPath := filepath.Join(fixturesDir, "no-image-stemcell.tgz")
+		templateContents3 := strings.Replace(string(templateContents2), "$STEMCELL_PATH", stemcellPath, -1)
+
+		exampleManifestPath = filepath.Join(tempDirPath, "manifest.yml")
+		err = ioutil.WriteFile(exampleManifestPath, []byte(templateContents3), os.ModePerm)
+		Expect(err).NotTo(HaveOccurred())
+
 		stubPath := filepath.Join(fixturesDir, "stub.yml")
 
 		configPathContents = fmt.Sprintf(`
@@ -78,13 +92,11 @@ stubs:
 		err := cmd.Execute(args)
 		Expect(err).NotTo(HaveOccurred())
 
-		expectedManifestPath := filepath.Join(fixturesDir, "manifest.yml")
-
 		manifestPath := filepath.Join(tempDirPath, "output_manifest.yml")
 		err = ioutil.WriteFile(manifestPath, outputManifest.Bytes(), os.ModePerm)
 		Expect(err).NotTo(HaveOccurred())
 
-		diffCommand := exec.Command("diff", "-C3", manifestPath, expectedManifestPath)
+		diffCommand := exec.Command("diff", "-C3", manifestPath, exampleManifestPath)
 		diffSession, err := gexec.Start(diffCommand, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
 
