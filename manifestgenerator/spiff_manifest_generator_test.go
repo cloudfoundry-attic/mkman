@@ -94,4 +94,44 @@ releases:
 		Expect(len(manifest.Releases)).To(BeNumerically(">=", 1))
 		Expect(manifest.Releases[0].Name).To(Equal("release-name"))
 	})
+
+	Context("when the stemcell stub cannot be made", func() {
+		var stubErr error
+		BeforeEach(func() {
+			stubErr = fmt.Errorf("my stemcell error")
+			stemcellStubMaker.MakeStubReturns("", stubErr)
+		})
+
+		It("forwards the error", func() {
+			manifestStr, err := manifestGenerator.GenerateManifest()
+			Expect(manifestStr).To(BeEmpty())
+			Expect(err).To(Equal(stubErr))
+		})
+	})
+
+	Context("when the release stub cannot be made", func() {
+		var stubErr error
+		BeforeEach(func() {
+			stubErr = fmt.Errorf("my release error")
+			releaseStubMaker.MakeStubReturns("", stubErr)
+		})
+
+		It("forwards the error", func() {
+			manifestStr, err := manifestGenerator.GenerateManifest()
+			Expect(manifestStr).To(BeEmpty())
+			Expect(err).To(Equal(stubErr))
+		})
+	})
+
+	Context("when there is an error running the generation script", func() {
+		BeforeEach(func() {
+			cfReleasePath = "/not/a/valid/path"
+		})
+
+		It("forwards the error", func() {
+			manifestStr, err := manifestGenerator.GenerateManifest()
+			Expect(manifestStr).To(BeEmpty())
+			Expect(err).To(HaveOccurred())
+		})
+	})
 })

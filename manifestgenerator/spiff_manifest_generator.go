@@ -31,29 +31,25 @@ func NewSpiffManifestGenerator(stemcellStubMaker, releaseStubMaker StubMaker, st
 func (g *SpiffManifestGenerator) GenerateManifest() (string, error) {
 	stemcellStubPath, err := g.stemcellStubMaker.MakeStub()
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	releaseStubPath, err := g.releaseStubMaker.MakeStub()
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	stubPaths := append(g.stubPaths, stemcellStubPath, releaseStubPath)
-
-	var cmdArgs []string
-	cmdArgs = append(cmdArgs, "aws")
-	cmdArgs = append(cmdArgs, stubPaths...)
+	cmdArgs := append([]string{"aws"}, stubPaths...)
 
 	generateManifestScriptPath := filepath.Join(g.cfPath, "scripts/generate_deployment_manifest")
 	cmd := exec.Command(generateManifestScriptPath, cmdArgs...)
 
 	outBytes, err := cmd.CombinedOutput()
-	manifest := string(outBytes)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", manifest)
-		panic(err)
+		fmt.Fprintf(os.Stderr, "%s\n", string(outBytes))
+		return "", err
 	}
 
-	return manifest, nil
+	return string(outBytes), nil
 }
