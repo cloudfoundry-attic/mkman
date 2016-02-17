@@ -9,19 +9,21 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/pivotal-cf-experimental/mkman/manifestgenerator"
-	"github.com/pivotal-cf-experimental/mkman/manifestgenerator/fakes"
+	"github.com/pivotal-cf-experimental/mkman/stubmakers/fakes"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("SpiffManifestGenerator", func() {
-	var cfReleasePath string
-	var stubPath string
-	var stemcellStubMaker *fakes.FakeStubMaker
-	var releaseStubMaker *fakes.FakeStubMaker
-	var manifestGenerator *manifestgenerator.SpiffManifestGenerator
-	var tempDirPath string
+	var (
+		cfReleasePath     string
+		stubPath          string
+		stemcellStubMaker *fakes.FakeStubMaker
+		releaseStubMaker  *fakes.FakeStubMaker
+		manifestGenerator *manifestgenerator.SpiffManifestGenerator
+		tempDirPath       string
+	)
 
 	BeforeEach(func() {
 		cfReleasePath = "/Users/pivotal/workspace/cf-release"

@@ -5,21 +5,23 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/pivotal-cf-experimental/mkman/stubmakers"
 )
 
-//go:generate counterfeiter . StubMaker
-type StubMaker interface {
-	MakeStub() (string, error)
-}
-
 type SpiffManifestGenerator struct {
-	stemcellStubMaker StubMaker
-	releaseStubMaker  StubMaker
+	stemcellStubMaker stubmakers.StubMaker
+	releaseStubMaker  stubmakers.StubMaker
 	stubPaths         []string
 	cfPath            string
 }
 
-func NewSpiffManifestGenerator(stemcellStubMaker, releaseStubMaker StubMaker, stubPaths []string, cfPath string) *SpiffManifestGenerator {
+func NewSpiffManifestGenerator(
+	stemcellStubMaker stubmakers.StubMaker,
+	releaseStubMaker stubmakers.StubMaker,
+	stubPaths []string,
+	cfPath string,
+) *SpiffManifestGenerator {
 	return &SpiffManifestGenerator{
 		stemcellStubMaker: stemcellStubMaker,
 		releaseStubMaker:  releaseStubMaker,

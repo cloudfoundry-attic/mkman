@@ -4,7 +4,7 @@ package fakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf-experimental/mkman/manifestgenerator"
+	"github.com/pivotal-cf-experimental/mkman/stubmakers"
 )
 
 type FakeStubMaker struct {
@@ -42,4 +42,4 @@ func (fake *FakeStubMaker) MakeStubReturns(result1 string, result2 error) {
 	}{result1, result2}
 }
 
-var _ manifestgenerator.StubMaker = new(FakeStubMaker)
+var _ stubmakers.StubMaker = new(FakeStubMaker)
