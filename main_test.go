@@ -5,7 +5,9 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -159,3 +161,8 @@ var _ = Describe("Executing binary", func() {
 		})
 	})
 })
+
+func getDirOfCurrentFile() string {
+	_, filename, _, _ := runtime.Caller(1)
+	return path.Dir(filename)
+}

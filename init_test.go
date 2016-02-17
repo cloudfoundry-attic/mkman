@@ -1,8 +1,6 @@
 package main_test
 
 import (
-	"path"
-	"runtime"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
@@ -28,9 +26,4 @@ var _ = AfterSuite(func() {
 func TestMain(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "mkman executable test suite")
-}
-
-func getDirOfCurrentFile() string {
-	_, filename, _, _ := runtime.Caller(1)
-	return path.Dir(filename)
 }

@@ -6,7 +6,9 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
+	"runtime"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -15,17 +17,24 @@ import (
 )
 
 var _ = Describe("CreateManifestsCommand", func() {
-	var args []string
-	var cmd commands.CreateManifestsCommand
-	var configPathContents string
-	var configPath string
-	var tempDirPath string
-	var outputManifest *bytes.Buffer
+	var (
+		args               []string
+		cmd                commands.CreateManifestsCommand
+		configPathContents string
+		configPath         string
+		tempDirPath        string
+		outputManifest     *bytes.Buffer
+		fixturesDir        string
+	)
 
 	BeforeEach(func() {
 		By("Ensuring $CF_RELEASE_DIR is set")
 		cfReleasePath := os.Getenv("CF_RELEASE_DIR")
 		Expect(cfReleasePath).NotTo(BeEmpty(), "$CF_RELEASE_DIR must be provided")
+
+		By("Locating fixtures dir")
+		testDir := getDirOfCurrentFile()
+		fixturesDir = filepath.Join(testDir, "..", "fixtures")
 
 		var err error
 		tempDirPath, err = ioutil.TempDir("", "")
@@ -120,3 +129,8 @@ stubs:
 		})
 	})
 })
+
+func getDirOfCurrentFile() string {
+	_, filename, _, _ := runtime.Caller(1)
+	return path.Dir(filename)
+}
