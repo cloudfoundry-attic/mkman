@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 
@@ -16,7 +17,9 @@ type ManifestGenerator interface {
 	GenerateManifest() (string, error)
 }
 
-type CreateManifestsCommand struct{}
+type CreateManifestsCommand struct {
+	OutputWriter io.Writer
+}
 
 func (command *CreateManifestsCommand) Execute(args []string) error {
 	if len(args) < 1 {
@@ -43,7 +46,11 @@ func (command *CreateManifestsCommand) Execute(args []string) error {
 		panic(err)
 	}
 
-	_, err = fmt.Fprintf(os.Stdout, manifest)
+	if command.OutputWriter == nil {
+		command.OutputWriter = os.Stdout
+	}
+
+	_, err = fmt.Fprintf(command.OutputWriter, manifest)
 	if err != nil {
 		panic(err)
 	}

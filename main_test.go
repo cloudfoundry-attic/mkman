@@ -89,9 +89,18 @@ var _ = Describe("Executing binary", func() {
 		var (
 			tempDirPath string
 			configPath  string
+			fixturesDir string
 		)
 
 		BeforeEach(func() {
+			By("Locating fixtures dir")
+			testDir := getDirOfCurrentFile()
+			fixturesDir = filepath.Join(testDir, "fixtures")
+
+			By("Ensuring $CF_RELEASE_DIR is set")
+			cfReleasePath := os.Getenv("CF_RELEASE_DIR")
+			Expect(cfReleasePath).NotTo(BeEmpty(), "$CF_RELEASE_DIR must be provided")
+
 			args = []string{"create-manifests"}
 
 			var err error
@@ -101,7 +110,7 @@ var _ = Describe("Executing binary", func() {
 			configPath = filepath.Join(tempDirPath, "config.json")
 
 			stemcellPath := filepath.Join(fixturesDir, "no-image-stemcell.tgz")
-			stubsPath := filepath.Join(fixturesDir, "stub.yml")
+			stubPath := filepath.Join(fixturesDir, "stub.yml")
 
 			configPathContents := fmt.Sprintf(`
 {
@@ -112,7 +121,7 @@ var _ = Describe("Executing binary", func() {
 `,
 				cfReleasePath,
 				stemcellPath,
-				stubsPath,
+				stubPath,
 			)
 
 			err = ioutil.WriteFile(configPath, []byte(configPathContents), os.ModePerm)
@@ -147,36 +156,6 @@ var _ = Describe("Executing binary", func() {
 			Eventually(diffSession).Should(gexec.Exit())
 			Expect(diffSession.Out.Contents()).To(BeEmpty())
 			Expect(diffSession.Err.Contents()).To(BeEmpty())
-		})
-
-		Context("when path is not provided", func() {
-			BeforeEach(func() {
-				args = []string{args[0]}
-			})
-
-			It("exits with error", func() {
-				command := exec.Command(binPath, args...)
-				session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
-				Expect(err).NotTo(HaveOccurred())
-
-				Eventually(session, executableTimeout).Should(gexec.Exit(1))
-				Expect(session.Err).To(gbytes.Say("error: create-manifests requires PATH_TO_CONFIG"))
-			})
-		})
-
-		Context("when path is not valid", func() {
-			BeforeEach(func() {
-				args[1] = "/bad/path"
-			})
-
-			It("exits with error", func() {
-				command := exec.Command(binPath, args...)
-				session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
-				Expect(err).NotTo(HaveOccurred())
-
-				Eventually(session, executableTimeout).Should(gexec.Exit(1))
-				Expect(session.Err).To(gbytes.Say("error: open /bad/path: no such file or directory"))
-			})
 		})
 	})
 })

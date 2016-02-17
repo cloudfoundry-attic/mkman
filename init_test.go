@@ -1,9 +1,7 @@
 package main_test
 
 import (
-	"os"
 	"path"
-	"path/filepath"
 	"runtime"
 	"testing"
 
@@ -13,20 +11,10 @@ import (
 )
 
 var (
-	binPath       string
-	fixturesDir   string
-	cfReleasePath string
+	binPath string
 )
 
 var _ = BeforeSuite(func() {
-	By("Locating fixtures dir")
-	testDir := getDirOfCurrentFile()
-	fixturesDir = filepath.Join(testDir, "fixtures")
-
-	By("Ensuring $CF_RELEASE_DIR is set")
-	cfReleasePath = os.Getenv("CF_RELEASE_DIR")
-	Expect(cfReleasePath).NotTo(BeEmpty(), "$CF_RELEASE_DIR must be provided")
-
 	By("Compiling binary")
 	var err error
 	binPath, err = gexec.Build("github.com/pivotal-cf-experimental/mkman", "-race")

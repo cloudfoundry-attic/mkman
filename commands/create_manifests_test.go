@@ -1,13 +1,16 @@
 package commands_test
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/gexec"
 	"github.com/pivotal-cf-experimental/mkman/commands"
 )
 
@@ -15,16 +18,21 @@ var _ = Describe("CreateManifestsCommand", func() {
 	var args []string
 	var cmd commands.CreateManifestsCommand
 	var configPathContents string
-	var cfReleasePath string
-	var stemcellPath string
-	var stubPath string
 	var configPath string
 	var tempDirPath string
+	var outputManifest *bytes.Buffer
 
 	BeforeEach(func() {
+		By("Ensuring $CF_RELEASE_DIR is set")
+		cfReleasePath := os.Getenv("CF_RELEASE_DIR")
+		Expect(cfReleasePath).NotTo(BeEmpty(), "$CF_RELEASE_DIR must be provided")
+
 		var err error
 		tempDirPath, err = ioutil.TempDir("", "")
 		Expect(err).NotTo(HaveOccurred())
+
+		stemcellPath := filepath.Join(fixturesDir, "no-image-stemcell.tgz")
+		stubPath := filepath.Join(fixturesDir, "stub.yml")
 
 		configPathContents = fmt.Sprintf(`
 cf: %s
@@ -39,7 +47,12 @@ stubs:
 		configPath = filepath.Join(tempDirPath, "config.yml")
 		args = []string{configPath}
 
-		cmd = commands.CreateManifestsCommand{}
+		outputManifest = &bytes.Buffer{}
+
+		cmd = commands.CreateManifestsCommand{
+			OutputWriter: outputManifest,
+		}
+
 	})
 
 	AfterEach(func() {
@@ -50,6 +63,25 @@ stubs:
 	JustBeforeEach(func() {
 		err := ioutil.WriteFile(configPath, []byte(configPathContents), os.ModePerm)
 		Expect(err).ShouldNot(HaveOccurred())
+	})
+
+	It("creates manifest without error", func() {
+		err := cmd.Execute(args)
+		Expect(err).NotTo(HaveOccurred())
+
+		expectedManifestPath := filepath.Join(fixturesDir, "manifest.yml")
+
+		manifestPath := filepath.Join(tempDirPath, "output_manifest.yml")
+		err = ioutil.WriteFile(manifestPath, outputManifest.Bytes(), os.ModePerm)
+		Expect(err).NotTo(HaveOccurred())
+
+		diffCommand := exec.Command("diff", "-C3", manifestPath, expectedManifestPath)
+		diffSession, err := gexec.Start(diffCommand, GinkgoWriter, GinkgoWriter)
+		Expect(err).NotTo(HaveOccurred())
+
+		Eventually(diffSession).Should(gexec.Exit())
+		Expect(diffSession.Out.Contents()).To(BeEmpty())
+		Expect(diffSession.Err.Contents()).To(BeEmpty())
 	})
 
 	Context("when path is not provided", func() {
@@ -87,5 +119,4 @@ stubs:
 			Expect(err.Error()).To(Equal("yaml: line 1: did not find expected node content"))
 		})
 	})
-
 })
