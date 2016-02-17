@@ -1,17 +1,27 @@
-package stemcell
+package stubmakers
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/pivotal-cf-experimental/mkman/tar"
-
 	"gopkg.in/yaml.v2"
 )
 
-func StubFromTar(stemcellPath string) (string, error) {
-	fmt.Printf("@@@ DEBUG tar looking for stemcell.MF\n")
-	manifestContents, err := tar.ReadFileContentsFromTar(stemcellPath, "stemcell.MF")
+type stemcellStubMaker struct {
+	tarballPath string
+}
+
+func NewStemcellStubMaker(tarballPath string) *stemcellStubMaker {
+	return &stemcellStubMaker{
+		tarballPath: tarballPath,
+	}
+}
+
+func (s *stemcellStubMaker) MakeStub() (string, error) {
+	manifestContents, err := tar.ReadFileContentsFromTar(s.tarballPath, "stemcell.MF")
 	if err != nil {
 		panic(err)
 	}
@@ -23,11 +33,28 @@ func StubFromTar(stemcellPath string) (string, error) {
 		panic(err)
 	}
 
-	return stub(
+	stemcellStubContents, err := stub(
 		manifest.Name,
 		manifest.Version,
-		stemcellPath,
+		s.tarballPath,
 	)
+	if err != nil {
+		panic(err)
+	}
+
+	intermediateDir, err := ioutil.TempDir("", "")
+	if err != nil {
+		// We cannot test this because it is too hard to get TempDir to return error
+		return "", err
+	}
+
+	stemcellStubPath := filepath.Join(intermediateDir, "stemcell.yml")
+	err = ioutil.WriteFile(stemcellStubPath, []byte(stemcellStubContents), os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+
+	return stemcellStubPath, nil
 }
 
 func stub(

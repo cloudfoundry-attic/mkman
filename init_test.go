@@ -13,11 +13,8 @@ import (
 )
 
 var (
-	binPath string
-
-	fixturesDir        string
-	outputManifestPath string
-
+	binPath       string
+	fixturesDir   string
 	cfReleasePath string
 )
 
@@ -34,12 +31,6 @@ var _ = BeforeSuite(func() {
 	var err error
 	binPath, err = gexec.Build("github.com/pivotal-cf-experimental/mkman", "-race")
 	Expect(err).ShouldNot(HaveOccurred())
-
-	By("Locating output manifest path")
-	binDir := filepath.Dir(binPath)
-	outputsDir := filepath.Join(binDir, "outputs")
-	manifestsDir := filepath.Join(outputsDir, "manifests")
-	outputManifestPath = filepath.Join(manifestsDir, "cf.yml")
 })
 
 var _ = AfterSuite(func() {

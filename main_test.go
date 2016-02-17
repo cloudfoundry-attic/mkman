@@ -132,9 +132,17 @@ var _ = Describe("Executing binary", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Eventually(session, executableTimeout).Should(gexec.Exit(0))
-			Expect(session.Out).To(gbytes.Say("creating manifests from: %s", configPath))
 
 			expectedManifestPath := filepath.Join(fixturesDir, "manifest.yml")
+
+			cwd, err := os.Getwd()
+			Expect(err).NotTo(HaveOccurred())
+			outputManifestPath := filepath.Join(
+				cwd,
+				"outputs",
+				"manifests",
+				"cf.yml",
+			)
 
 			diffCommand := exec.Command("diff", "-C3", outputManifestPath, expectedManifestPath)
 			diffSession, err := gexec.Start(diffCommand, GinkgoWriter, GinkgoWriter)
