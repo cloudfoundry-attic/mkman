@@ -2,7 +2,6 @@ package manifestgenerator
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -29,7 +28,7 @@ func NewSpiffManifestGenerator(stemcellStubMaker, releaseStubMaker StubMaker, st
 	}
 }
 
-func (g *SpiffManifestGenerator) GenerateManifest() error {
+func (g *SpiffManifestGenerator) GenerateManifest() (string, error) {
 	stemcellStubPath, err := g.stemcellStubMaker.MakeStub()
 	if err != nil {
 		panic(err)
@@ -50,32 +49,11 @@ func (g *SpiffManifestGenerator) GenerateManifest() error {
 	cmd := exec.Command(generateManifestScriptPath, cmdArgs...)
 
 	outBytes, err := cmd.CombinedOutput()
+	manifest := string(outBytes)
 	if err != nil {
-		fmt.Printf("---\n%s\n", string(outBytes))
+		fmt.Fprintf(os.Stderr, "%s\n", manifest)
 		panic(err)
 	}
 
-	currentDir, err := os.Getwd()
-	if err != nil {
-		// We cannot test this because it is too hard to get Getwd to return error
-		return err
-	}
-
-	outputDirPath := filepath.Join(currentDir, "outputs")
-	manifestsDirPath := filepath.Join(outputDirPath, "manifests")
-
-	err = os.MkdirAll(manifestsDirPath, os.ModePerm)
-	if err != nil {
-		panic(err)
-	}
-
-	manifestFilePath := filepath.Join(manifestsDirPath, "cf.yml")
-
-	fmt.Printf("writing manifest to: %s\n", manifestFilePath)
-	err = ioutil.WriteFile(manifestFilePath, outBytes, os.ModePerm)
-	if err != nil {
-		panic(err)
-	}
-
-	return nil
+	return manifest, nil
 }

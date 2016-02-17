@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 
 	"github.com/pivotal-cf-experimental/mkman/config"
 	"github.com/pivotal-cf-experimental/mkman/manifestgenerator"
@@ -11,9 +12,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-//go:generate counterfeiter . ManifestGenerator
 type ManifestGenerator interface {
-	GenerateManifest() error
+	GenerateManifest() (string, error)
 }
 
 type CreateManifestsCommand struct{}
@@ -37,6 +37,15 @@ func (command *CreateManifestsCommand) Execute(args []string) error {
 	stemcellStubMaker := stubmakers.NewStemcellStubMaker(config.StemcellPath)
 	releaseStubMaker := stubmakers.NewReleaseStubMaker(config.CFPath)
 	manifestGenerator := manifestgenerator.NewSpiffManifestGenerator(stemcellStubMaker, releaseStubMaker, config.StubPaths, config.CFPath)
-	err = manifestGenerator.GenerateManifest()
-	return err
+
+	manifest, err := manifestGenerator.GenerateManifest()
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = fmt.Fprintf(os.Stdout, manifest)
+	if err != nil {
+		panic(err)
+	}
+	return nil
 }

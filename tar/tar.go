@@ -10,19 +10,16 @@ import (
 )
 
 func ReadFileContentsFromTar(tarPath string, filename string) ([]byte, error) {
-	fmt.Printf("@@@ DEBUG opening tar: %s\n", tarPath)
 	file, err := os.Open(tarPath)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("@@@ DEBUG unzipping: %s\n", tarPath)
 	fileReader, err := gzip.NewReader(file)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("@@@ DEBUG untarring: %s\n", tarPath)
 	tr := tar.NewReader(fileReader)
 	for {
 		hdr, err := tr.Next()
@@ -33,9 +30,7 @@ func ReadFileContentsFromTar(tarPath string, filename string) ([]byte, error) {
 			panic(err)
 		}
 
-		fmt.Printf("@@@ DEBUG name: %s\n", hdr.Name)
 		if hdr.Name == filename {
-			fmt.Printf("@@@ DEBUG found: %s\n", filename)
 			b, err := ioutil.ReadAll(tr)
 			if err != nil {
 				panic(err)

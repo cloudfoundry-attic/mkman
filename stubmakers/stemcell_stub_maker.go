@@ -1,7 +1,6 @@
 package stubmakers
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -26,7 +25,6 @@ func (s *stemcellStubMaker) MakeStub() (string, error) {
 		panic(err)
 	}
 
-	fmt.Printf("@@@ DEBUG manifest contents: %s\n", string(manifestContents))
 	manifest := stemcellManifest{}
 	err = yaml.Unmarshal(manifestContents, &manifest)
 	if err != nil {

@@ -71,13 +71,7 @@ releases:
 	})
 
 	AfterEach(func() {
-		_, err := os.Stat(outputsDir)
-		if err == nil {
-			err = os.RemoveAll(outputsDir)
-			Expect(err).NotTo(HaveOccurred())
-		}
-
-		err = os.RemoveAll(tempDirPath)
+		err := os.RemoveAll(tempDirPath)
 		Expect(err).ShouldNot(HaveOccurred())
 	})
 
@@ -89,33 +83,15 @@ releases:
 		} `yaml:"releases"`
 	}
 
-	It("places the outputs in the current directory", func() {
-		manifestsDir := filepath.Join(outputsDir, "manifests")
-		cfManifestPath := filepath.Join(manifestsDir, "cf.yml")
-
-		err := manifestGenerator.GenerateManifest()
-		Expect(err).NotTo(HaveOccurred())
-
-		_, err = os.Stat(cfManifestPath)
-		Expect(err).NotTo(HaveOccurred())
-	})
-
 	It("includes the information about releases", func() {
-		manifestsDir := filepath.Join(outputsDir, "manifests")
-		cfManifestPath := filepath.Join(manifestsDir, "cf.yml")
-
-		err := manifestGenerator.GenerateManifest()
-		Expect(err).NotTo(HaveOccurred())
-
-		yamlBytes, err := ioutil.ReadFile(cfManifestPath)
+		manifestStr, err := manifestGenerator.GenerateManifest()
 		Expect(err).NotTo(HaveOccurred())
 
 		var manifest outputManifest
-		err = yaml.Unmarshal(yamlBytes, &manifest)
+		err = yaml.Unmarshal([]byte(manifestStr), &manifest)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(len(manifest.Releases)).To(BeNumerically(">=", 1))
 		Expect(manifest.Releases[0].Name).To(Equal("release-name"))
 	})
-
 })
