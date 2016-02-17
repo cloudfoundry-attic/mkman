@@ -75,7 +75,6 @@ stubs:
 		cmd = commands.CreateManifestsCommand{
 			OutputWriter: outputManifest,
 		}
-
 	})
 
 	AfterEach(func() {
@@ -138,6 +137,17 @@ stubs:
 			err := cmd.Execute(args)
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(Equal("yaml: line 1: did not find expected node content"))
+		})
+	})
+
+	Context("when the OutputWriter is not provided", func() {
+		BeforeEach(func() {
+			cmd = commands.CreateManifestsCommand{}
+		})
+
+		It("defaults the writer to stdout", func() {
+			cmd.Execute(args)
+			Expect(cmd.OutputWriter).To(Equal(os.Stdout))
 		})
 	})
 })
