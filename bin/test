@@ -7,17 +7,6 @@ my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # This script expects that it lives one directory below the base directory.
 base_dir="$( cd "${my_dir}/.." && pwd )"
 
-export CF_RELEASE_DIR="${CF_RELEASE_DIR:-${base_dir}/tmp/cf-release}"
-
-mkdir -p "${CF_RELEASE_DIR}"
-
-pushd "${CF_RELEASE_DIR}" > /dev/null
-git remote -v | grep 'cf-release' || \
-  (git clone https://github.com/cloudfoundry/cf-release . \
-  && git checkout develop \
-  && ./scripts/update)
-popd > /dev/null
-
 pushd "${base_dir}" > /dev/null
   ginkgo \
     -p \
@@ -26,6 +15,5 @@ pushd "${base_dir}" > /dev/null
     -randomizeAllSpecs \
     -randomizeSuites \
     -failOnPending \
-    -skipPackage tmp \
-    "$@" | grep -v './tmp' | grep -v 'Will skip:'
+    "$@"
 popd > /dev/null
