@@ -14,7 +14,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"
-	"github.com/pivotal-cf-experimental/mkman/commands"
+	"github.com/cloudfoundry/mkman/commands"
 )
 
 var _ = Describe("CreateManifestsCommand", func() {

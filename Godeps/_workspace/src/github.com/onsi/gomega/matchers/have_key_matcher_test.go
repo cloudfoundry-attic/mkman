@@ -1,9 +1,9 @@
 package matchers_test
 
 import (
-	. "github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"
-	. "github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
-	. "github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/gomega/matchers"
+	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"
+	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
+	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega/matchers"
 )
 
 var _ = Describe("HaveKey", func() {

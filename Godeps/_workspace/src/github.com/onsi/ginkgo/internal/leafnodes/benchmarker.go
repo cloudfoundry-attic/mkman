@@ -4,7 +4,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/types"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/types"
 )
 
 type benchmarker struct {

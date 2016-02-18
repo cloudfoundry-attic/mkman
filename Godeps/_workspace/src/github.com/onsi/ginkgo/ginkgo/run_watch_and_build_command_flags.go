@@ -4,7 +4,7 @@ import (
 	"flag"
 	"runtime"
 
-	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/config"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/config"
 )
 
 type RunWatchAndBuildCommandFlags struct {

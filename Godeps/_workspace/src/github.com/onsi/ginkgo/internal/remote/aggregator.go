@@ -12,9 +12,9 @@ package remote
 import (
 	"time"
 
-	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/config"
-	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/reporters/stenographer"
-	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/types"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/config"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/reporters/stenographer"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/types"
 )
 
 type configAndSuite struct {

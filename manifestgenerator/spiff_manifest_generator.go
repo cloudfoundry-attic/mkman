@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/pivotal-cf-experimental/mkman/stubmakers"
+	"github.com/cloudfoundry/mkman/stubmakers"
 )
 
 type SpiffManifestGenerator struct {

@@ -20,6 +20,6 @@ instructions on installing and configuring golang.
 Install and run `mkman` with the following commands:
 
 ```bash
-go get github.com/pivotal-cf-experimental/mkman
+go get github.com/cloudfoundry/mkman
 mkman
 ```

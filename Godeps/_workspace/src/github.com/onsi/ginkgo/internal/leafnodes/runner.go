@@ -2,9 +2,9 @@ package leafnodes
 
 import (
 	"fmt"
-	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/internal/codelocation"
-	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/internal/failer"
-	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/types"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/internal/codelocation"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/internal/failer"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/types"
 	"reflect"
 	"time"
 )

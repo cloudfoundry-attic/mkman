@@ -7,12 +7,12 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/config"
-	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/internal/leafnodes"
-	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/internal/spec"
-	Writer "github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/internal/writer"
-	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/reporters"
-	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/types"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/config"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/internal/leafnodes"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/internal/spec"
+	Writer "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/internal/writer"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/reporters"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo/types"
 
 	"time"
 )

@@ -4,7 +4,7 @@ package fakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf-experimental/mkman/stubmakers"
+	"github.com/cloudfoundry/mkman/stubmakers"
 )
 
 type FakeStubMaker struct {

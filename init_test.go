@@ -3,9 +3,9 @@ package main_test
 import (
 	"testing"
 
-	. "github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"
-	. "github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
-	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/gomega/gexec"
+	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"
+	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega/gexec"
 )
 
 var (
@@ -15,7 +15,7 @@ var (
 var _ = BeforeSuite(func() {
 	By("Compiling binary")
 	var err error
-	binPath, err = gexec.Build("github.com/pivotal-cf-experimental/mkman", "-race")
+	binPath, err = gexec.Build("github.com/cloudfoundry/mkman", "-race")
 	Expect(err).ShouldNot(HaveOccurred())
 })
 

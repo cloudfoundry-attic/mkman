@@ -4,10 +4,10 @@ import (
 	"io"
 	"time"
 
-	. "github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/gomega/gbytes"
+	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega/gbytes"
 
-	. "github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"
-	. "github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
+	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"
+	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
 )
 
 var _ = Describe("Buffer", func() {

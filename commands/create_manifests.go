@@ -6,10 +6,10 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/pivotal-cf-experimental/mkman/config"
-	"github.com/pivotal-cf-experimental/mkman/manifestgenerator"
-	"github.com/pivotal-cf-experimental/mkman/stubmakers"
-	"github.com/pivotal-cf-experimental/mkman/tarball"
+	"github.com/cloudfoundry/mkman/config"
+	"github.com/cloudfoundry/mkman/manifestgenerator"
+	"github.com/cloudfoundry/mkman/stubmakers"
+	"github.com/cloudfoundry/mkman/tarball"
 
 	"gopkg.in/yaml.v2"
 )

@@ -1,7 +1,7 @@
 package testingtsupport_test
 
 import (
-	. "github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
+	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
 
 	"testing"
 )

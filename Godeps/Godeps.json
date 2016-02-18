@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/pivotal-cf-experimental/mkman",
+	"ImportPath": "github.com/cloudfoundry/mkman",
 	"GoVersion": "go1.5.1",
 	"Deps": [
 		{

@@ -8,8 +8,8 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf-experimental/mkman/stubmakers"
-	"github.com/pivotal-cf-experimental/mkman/tarball/fakes"
+	"github.com/cloudfoundry/mkman/stubmakers"
+	"github.com/cloudfoundry/mkman/tarball/fakes"
 )
 
 var _ = Describe("StemcellStubMaker", func() {

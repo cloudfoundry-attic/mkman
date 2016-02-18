@@ -8,8 +8,8 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"github.com/pivotal-cf-experimental/mkman/manifestgenerator"
-	"github.com/pivotal-cf-experimental/mkman/stubmakers/fakes"
+	"github.com/cloudfoundry/mkman/manifestgenerator"
+	"github.com/cloudfoundry/mkman/stubmakers/fakes"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

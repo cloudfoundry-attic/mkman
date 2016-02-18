@@ -11,8 +11,8 @@ import (
 	"sync"
 	"syscall"
 
-	. "github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
-	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/gomega/gbytes"
+	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega/gbytes"
 )
 
 const INVALID_EXIT_CODE = 254

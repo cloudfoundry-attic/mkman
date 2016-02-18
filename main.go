@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/jessevdk/go-flags"
-	"github.com/pivotal-cf-experimental/mkman/commands"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/jessevdk/go-flags"
+	"github.com/cloudfoundry/mkman/commands"
 )
 
 func main() {

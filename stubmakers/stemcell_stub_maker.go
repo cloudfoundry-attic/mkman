@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/pivotal-cf-experimental/mkman/tarball"
+	"github.com/cloudfoundry/mkman/tarball"
 
 	"gopkg.in/yaml.v2"
 )

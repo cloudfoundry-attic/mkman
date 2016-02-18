@@ -7,7 +7,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf-experimental/mkman/tarball"
+	"github.com/cloudfoundry/mkman/tarball"
 )
 
 var _ = Describe("TarballReader", func() {

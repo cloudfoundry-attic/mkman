@@ -4,7 +4,7 @@ package fakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf-experimental/mkman/tarball"
+	"github.com/cloudfoundry/mkman/tarball"
 )
 
 type FakeTarballReader struct {
