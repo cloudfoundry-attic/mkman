@@ -1,6 +1,6 @@
 package edge
 
-import . "github.com/onsi/gomega/matchers/support/goraph/node"
+import . "github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/gomega/matchers/support/goraph/node"
 
 type Edge struct {
 	Node1 Node

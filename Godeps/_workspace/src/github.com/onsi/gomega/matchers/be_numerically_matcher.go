@@ -2,7 +2,7 @@ package matchers
 
 import (
 	"fmt"
-	"github.com/onsi/gomega/format"
+	"github.com/pivotal-cf-experimental/mkman/Godeps/_workspace/src/github.com/onsi/gomega/format"
 	"math"
 )
 
