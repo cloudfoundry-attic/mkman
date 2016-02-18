@@ -1318,6 +1318,7 @@ properties:
         cf1: subnet-goobers
         cf2: subnet-goobers
   traffic_controller:
+    disable_access_control: null
     outgoing_port: 8080
     zone: null
   uaa:
