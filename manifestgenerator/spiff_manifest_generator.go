@@ -49,7 +49,10 @@ func (g *SpiffManifestGenerator) GenerateManifest() (string, error) {
 
 	outBytes, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", string(outBytes))
+		// Don't print spurious empty output
+		if len(outBytes) > 0 {
+			fmt.Fprintf(os.Stderr, "%s\n", string(outBytes))
+		}
 		return "", err
 	}
 

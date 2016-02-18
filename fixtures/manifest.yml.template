@@ -365,6 +365,20 @@ jobs:
   templates:
   - name: consul_agent
     release: cf
+  - name: go-buildpack
+    release: cf
+  - name: binary-buildpack
+    release: cf
+  - name: nodejs-buildpack
+    release: cf
+  - name: ruby-buildpack
+    release: cf
+  - name: php-buildpack
+    release: cf
+  - name: python-buildpack
+    release: cf
+  - name: staticfile-buildpack
+    release: cf
   - name: cloud_controller_ng
     release: cf
   - name: metron_agent
@@ -406,6 +420,20 @@ jobs:
   resource_pool: large_z2
   templates:
   - name: consul_agent
+    release: cf
+  - name: go-buildpack
+    release: cf
+  - name: binary-buildpack
+    release: cf
+  - name: nodejs-buildpack
+    release: cf
+  - name: ruby-buildpack
+    release: cf
+  - name: php-buildpack
+    release: cf
+  - name: python-buildpack
+    release: cf
+  - name: staticfile-buildpack
     release: cf
   - name: cloud_controller_ng
     release: cf
@@ -893,21 +921,21 @@ properties:
     default_app_memory: 1024
     default_buildpacks:
     - name: staticfile_buildpack
-      package: buildpack_staticfile
+      package: staticfile-buildpack
     - name: java_buildpack
       package: buildpack_java
     - name: ruby_buildpack
-      package: buildpack_ruby
+      package: ruby-buildpack
     - name: nodejs_buildpack
-      package: buildpack_nodejs
+      package: nodejs-buildpack
     - name: go_buildpack
-      package: buildpack_go
+      package: go-buildpack
     - name: python_buildpack
-      package: buildpack_python
+      package: python-buildpack
     - name: php_buildpack
-      package: buildpack_php
+      package: php-buildpack
     - name: binary_buildpack
-      package: buildpack_binary
+      package: binary-buildpack
     default_health_check_timeout: 60
     default_quota_definition: default
     default_running_security_groups:
@@ -941,21 +969,21 @@ properties:
     external_protocol: null
     install_buildpacks:
     - name: staticfile_buildpack
-      package: buildpack_staticfile
+      package: staticfile-buildpack
     - name: java_buildpack
       package: buildpack_java
     - name: ruby_buildpack
-      package: buildpack_ruby
+      package: ruby-buildpack
     - name: nodejs_buildpack
-      package: buildpack_nodejs
+      package: nodejs-buildpack
     - name: go_buildpack
-      package: buildpack_go
+      package: go-buildpack
     - name: python_buildpack
-      package: buildpack_python
+      package: python-buildpack
     - name: php_buildpack
-      package: buildpack_php
+      package: php-buildpack
     - name: binary_buildpack
-      package: buildpack_binary
+      package: binary-buildpack
     internal_api_password: zbTuuLaap44jadlas2l312lk
     internal_api_user: internal_user
     jobs:
@@ -1060,21 +1088,21 @@ properties:
     staging_upload_user: zxsfhgjg
     system_buildpacks:
     - name: staticfile_buildpack
-      package: buildpack_staticfile
+      package: staticfile-buildpack
     - name: java_buildpack
       package: buildpack_java
     - name: ruby_buildpack
-      package: buildpack_ruby
+      package: ruby-buildpack
     - name: nodejs_buildpack
-      package: buildpack_nodejs
+      package: nodejs-buildpack
     - name: go_buildpack
-      package: buildpack_go
+      package: go-buildpack
     - name: python_buildpack
-      package: buildpack_python
+      package: python-buildpack
     - name: php_buildpack
-      package: buildpack_php
+      package: php-buildpack
     - name: binary_buildpack
-      package: buildpack_binary
+      package: binary-buildpack
     thresholds:
       api:
         alert_if_above_mb: null
