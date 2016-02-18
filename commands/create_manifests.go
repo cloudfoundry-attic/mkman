@@ -9,6 +9,7 @@ import (
 	"github.com/pivotal-cf-experimental/mkman/config"
 	"github.com/pivotal-cf-experimental/mkman/manifestgenerator"
 	"github.com/pivotal-cf-experimental/mkman/stubmakers"
+	"github.com/pivotal-cf-experimental/mkman/tarball"
 
 	"gopkg.in/yaml.v2"
 )
@@ -37,7 +38,8 @@ func (command *CreateManifestsCommand) Execute(args []string) error {
 		return err
 	}
 
-	stemcellStubMaker := stubmakers.NewStemcellStubMaker(config.StemcellPath)
+	tarballReader := tarball.NewTarballReader(config.StemcellPath)
+	stemcellStubMaker := stubmakers.NewStemcellStubMaker(tarballReader, config.StemcellPath)
 	releaseStubMaker := stubmakers.NewReleaseStubMaker(config.CFPath)
 	manifestGenerator := manifestgenerator.NewSpiffManifestGenerator(stemcellStubMaker, releaseStubMaker, config.StubPaths, config.CFPath)
 

@@ -1,18 +1,10 @@
 package stubmakers
 
-import (
-	"io/ioutil"
-	"os"
-	"path/filepath"
-
-	"gopkg.in/yaml.v2"
-)
-
 type releaseStubMaker struct {
 	releasePath string
 }
 
-func NewReleaseStubMaker(releasePath string) *releaseStubMaker {
+func NewReleaseStubMaker(releasePath string) StubMaker {
 	return &releaseStubMaker{
 		releasePath: releasePath,
 	}
@@ -29,24 +21,7 @@ func (r *releaseStubMaker) MakeStub() (string, error) {
 		},
 	}
 
-	releaseStubContents, err := yaml.Marshal(releaseStub)
-	if err != nil {
-		return "", nil
-	}
-
-	intermediateDir, err := ioutil.TempDir("", "")
-	if err != nil {
-		// We cannot test this because it is too hard to get TempDir to return error
-		return "", err
-	}
-
-	releaseStubPath := filepath.Join(intermediateDir, "releases.yml")
-	err = ioutil.WriteFile(releaseStubPath, releaseStubContents, os.ModePerm)
-	if err != nil {
-		panic(err)
-	}
-
-	return releaseStubPath, nil
+	return marshalTempStub(releaseStub, "release.yml")
 }
 
 type releaseStub struct {

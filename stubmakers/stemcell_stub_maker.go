@@ -1,97 +1,73 @@
 package stubmakers
 
 import (
-	"io/ioutil"
-	"os"
+	"fmt"
 	"path/filepath"
 
-	"github.com/pivotal-cf-experimental/mkman/tar"
+	"github.com/pivotal-cf-experimental/mkman/tarball"
+
 	"gopkg.in/yaml.v2"
 )
 
 type stemcellStubMaker struct {
-	tarballPath string
+	tarballReader tarball.TarballReader
+	stemcellURL   string
 }
 
-func NewStemcellStubMaker(tarballPath string) *stemcellStubMaker {
+func NewStemcellStubMaker(tarballReader tarball.TarballReader, stemcellURL string) StubMaker {
 	return &stemcellStubMaker{
-		tarballPath: tarballPath,
+		tarballReader: tarballReader,
+		stemcellURL:   stemcellURL,
 	}
 }
 
 func (s *stemcellStubMaker) MakeStub() (string, error) {
-	manifestContents, err := tar.ReadFileContentsFromTar(s.tarballPath, "stemcell.MF")
+	stemcellStub := stemcellStub{
+		Meta: meta{
+			Stemcell: stemcell{},
+		},
+	}
+
+	switch filepath.Ext(s.stemcellURL) {
+	case ".tgz":
+		stemcellStub.Meta.Stemcell.URL = "file://" + s.stemcellURL
+	default:
+		return "", fmt.Errorf("unrecognized stemcell URL")
+	}
+
+	manifestContents, err := s.tarballReader.ReadFile("stemcell.MF")
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	manifest := stemcellManifest{}
 	err = yaml.Unmarshal(manifestContents, &manifest)
 	if err != nil {
-		panic(err)
-	}
-
-	stemcellStubContents, err := stub(
-		manifest.Name,
-		manifest.Version,
-		s.tarballPath,
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	intermediateDir, err := ioutil.TempDir("", "")
-	if err != nil {
-		// We cannot test this because it is too hard to get TempDir to return error
+		// Untested, as it is too difficult to force Unmarshal to return an error.
 		return "", err
 	}
 
-	stemcellStubPath := filepath.Join(intermediateDir, "stemcell.yml")
-	err = ioutil.WriteFile(stemcellStubPath, []byte(stemcellStubContents), os.ModePerm)
-	if err != nil {
-		panic(err)
-	}
+	stemcellStub.Meta.Stemcell.Name = manifest.Name
+	stemcellStub.Meta.Stemcell.Version = manifest.Version
 
-	return stemcellStubPath, nil
-}
-
-func stub(
-	name,
-	version string,
-	stemcellURL string,
-) (string, error) {
-	stemcellStub := stemcellStub{
-		Meta: meta{
-			Stemcell: stemcell{
-				Name:    name,
-				Version: version,
-			},
-		},
-	}
-
-	if filepath.Ext(stemcellURL) == ".tgz" {
-		stemcellStub.Meta.Stemcell.URL = "file://" + stemcellURL
-	}
-
-	b, err := yaml.Marshal(stemcellStub)
-	return string(b), err
+	return marshalTempStub(stemcellStub, "stemcell.yml")
 }
 
 type stemcellStub struct {
-	Meta meta `json:"meta"`
+	Meta meta `yaml:"meta"`
 }
 
 type meta struct {
-	Stemcell stemcell `json:"stemcell,omitempty"`
+	Stemcell stemcell `yaml:"stemcell,omitempty"`
 }
 
 type stemcell struct {
-	Name    string `json:"name"`
-	Version string `json:"version"`
-	URL     string `json:"url,omitempty"`
+	Name    string `yaml:"name"`
+	Version string `yaml:"version"`
+	URL     string `yaml:"url,omitempty"`
 }
 
 type stemcellManifest struct {
-	Name    string `json:"name"`
-	Version string `json:"version"`
+	Name    string `yaml:"name"`
+	Version string `yaml:"version"`
 }
