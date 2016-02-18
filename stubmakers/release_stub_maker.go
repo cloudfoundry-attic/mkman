@@ -25,11 +25,11 @@ func (r *releaseStubMaker) MakeStub() (string, error) {
 }
 
 type releaseStub struct {
-	Releases []release `json:"release,omitempty"`
+	Releases []release `yaml:"releases,omitempty"`
 }
 
 type release struct {
-	Name    string `json:"name"`
-	Version string `json:"version"`
-	URL     string `json:"url"`
+	Name    string `yaml:"name,omitempty"`
+	Version string `yaml:"version,omitempty"`
+	URL     string `yaml:"url,omitempty"`
 }

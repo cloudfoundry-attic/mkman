@@ -125,7 +125,7 @@ var _ = Describe("Executing binary", func() {
 			By("Writing config paths")
 			args = []string{"create-manifests"}
 
-			configPath = filepath.Join(tempDirPath, "config.json")
+			configPath = filepath.Join(tempDirPath, "config.yml")
 
 			stubPath := filepath.Join(fixturesDir, "stub.yml")
 
