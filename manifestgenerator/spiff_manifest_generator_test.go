@@ -6,13 +6,13 @@ import (
 	"os"
 	"path/filepath"
 
-	"gopkg.in/yaml.v2"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/gopkg.in/yaml.v2"
 
 	"github.com/cloudfoundry/mkman/manifestgenerator"
 	"github.com/cloudfoundry/mkman/stubmakers/fakes"
 
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"
+	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
 )
 
 var _ = Describe("SpiffManifestGenerator", func() {

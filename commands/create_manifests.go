@@ -11,7 +11,7 @@ import (
 	"github.com/cloudfoundry/mkman/stubmakers"
 	"github.com/cloudfoundry/mkman/tarball"
 
-	"gopkg.in/yaml.v2"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/gopkg.in/yaml.v2"
 )
 
 type ManifestGenerator interface {
