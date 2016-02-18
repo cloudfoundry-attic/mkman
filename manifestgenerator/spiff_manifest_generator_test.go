@@ -26,7 +26,9 @@ var _ = Describe("SpiffManifestGenerator", func() {
 	)
 
 	BeforeEach(func() {
-		cfReleasePath = "/Users/pivotal/workspace/cf-release"
+		By("Ensuring $CF_RELEASE_DIR is set")
+		cfReleasePath = os.Getenv("CF_RELEASE_DIR")
+		Expect(cfReleasePath).NotTo(BeEmpty(), "$CF_RELEASE_DIR must be provided")
 		stubPath = filepath.Join("../fixtures", "stub.yml")
 
 		var err error
