@@ -144,7 +144,7 @@ var _ = Describe("Executing binary", func() {
 			err = ioutil.WriteFile(configPath, []byte(configPathContents), os.ModePerm)
 			Expect(err).ShouldNot(HaveOccurred())
 
-			args = append(args, configPath)
+			args = append(args, "-c", configPath)
 		})
 
 		AfterEach(func() {
@@ -171,6 +171,23 @@ var _ = Describe("Executing binary", func() {
 			Eventually(diffSession).Should(gexec.Exit())
 			Expect(diffSession.Out.Contents()).To(BeEmpty())
 			Expect(diffSession.Err.Contents()).To(BeEmpty())
+		})
+
+		Context("when the required config flag is not provided", func() {
+			BeforeEach(func() {
+				args = []string{"create-manifests"}
+			})
+
+			It("exits with error", func() {
+				command := exec.Command(binPath, args...)
+				session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+				Expect(err).NotTo(HaveOccurred())
+
+				Eventually(session, executableTimeout).Should(gexec.Exit())
+				Expect(session.Err).To(gbytes.Say("required flag"))
+				Expect(session.Err).To(gbytes.Say("config"))
+				Expect(session.Err).To(gbytes.Say("not specified"))
+			})
 		})
 	})
 })

@@ -20,14 +20,11 @@ type ManifestGenerator interface {
 
 type CreateManifestsCommand struct {
 	OutputWriter io.Writer
+	ConfigPath   string `long:"config" short:"c" required:"true" description:"Configuration file"`
 }
 
 func (command *CreateManifestsCommand) Execute(args []string) error {
-	if len(args) < 1 {
-		return fmt.Errorf("create-manifests requires PATH_TO_CONFIG")
-	}
-
-	configFileContents, err := ioutil.ReadFile(args[0])
+	configFileContents, err := ioutil.ReadFile(command.ConfigPath)
 	if err != nil {
 		return err
 	}

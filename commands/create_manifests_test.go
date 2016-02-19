@@ -70,12 +70,12 @@ stubs:
 			stubPath,
 		)
 		configPath = filepath.Join(tempDirPath, "config.yml")
-		args = []string{configPath}
 
 		outputManifest = &bytes.Buffer{}
 
 		cmd = commands.CreateManifestsCommand{
 			OutputWriter: outputManifest,
+			ConfigPath:   configPath,
 		}
 	})
 
@@ -106,21 +106,9 @@ stubs:
 		Expect(diffSession.Err.Contents()).To(BeEmpty())
 	})
 
-	Context("when path is not provided", func() {
-		BeforeEach(func() {
-			args = []string{}
-		})
-
-		It("returns an error", func() {
-			err := cmd.Execute(args)
-			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(Equal("create-manifests requires PATH_TO_CONFIG"))
-		})
-	})
-
 	Context("when path is not valid", func() {
 		BeforeEach(func() {
-			args = []string{"/bad/path"}
+			cmd.ConfigPath = "/bad/path"
 		})
 
 		It("returns an error", func() {
@@ -164,9 +152,7 @@ stubs:
 
 	Context("when writing the output fails", func() {
 		BeforeEach(func() {
-			cmd = commands.CreateManifestsCommand{
-				OutputWriter: &alwaysErrorWriter{},
-			}
+			cmd.OutputWriter = &alwaysErrorWriter{}
 		})
 
 		It("forwards the error", func() {
