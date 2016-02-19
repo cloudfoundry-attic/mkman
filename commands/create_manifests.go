@@ -20,7 +20,7 @@ type ManifestGenerator interface {
 
 type CreateManifestsCommand struct {
 	OutputWriter io.Writer
-	ConfigPath   string `long:"config" short:"c" required:"true" description:"Configuration file"`
+	ConfigPath   string `long:"config" short:"c" required:"true" description:"Configuration file (required)"`
 }
 
 func (command *CreateManifestsCommand) Execute(args []string) error {

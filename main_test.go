@@ -189,6 +189,21 @@ var _ = Describe("Executing binary", func() {
 				Expect(session.Err).To(gbytes.Say("not specified"))
 			})
 		})
+
+		Describe("--help", func() {
+			BeforeEach(func() {
+				args = append(args, "--help")
+			})
+
+			It("displays required flags", func() {
+				command := exec.Command(binPath, args...)
+				session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+				Expect(err).NotTo(HaveOccurred())
+
+				Eventually(session, executableTimeout).Should(gexec.Exit())
+				Expect(session.Err).To(gbytes.Say("config.*required"))
+			})
+		})
 	})
 })
 
