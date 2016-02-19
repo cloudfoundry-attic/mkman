@@ -39,6 +39,11 @@ func (command *CreateManifestsCommand) Execute(args []string) error {
 		return err
 	}
 
+	errors := config.Validate()
+	if errors != nil {
+		return errors
+	}
+
 	tarballReader := tarball.NewTarballReader(config.StemcellPath)
 	stemcellStubMaker := stubmakers.NewStemcellStubMaker(tarballReader, config.StemcellPath)
 	releaseStubMaker := stubmakers.NewReleaseStubMaker(config.CFPath)

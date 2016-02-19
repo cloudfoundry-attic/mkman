@@ -150,6 +150,23 @@ var _ = Describe("CreateManifestsCommand", func() {
 		})
 	})
 
+	Context("when the config file has empty values", func() {
+		BeforeEach(func() {
+			configPathContents = fmt.Sprintf(`
+        cf: 
+        stemcell: 
+        stubs:
+        - 
+        `)
+		})
+
+		It("returns an error", func() {
+			err := cmd.Execute(args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("path to stemcell is missing"))
+		})
+	})
+
 	Context("when writing the output fails", func() {
 		BeforeEach(func() {
 			cmd.OutputWriter = &alwaysErrorWriter{}
