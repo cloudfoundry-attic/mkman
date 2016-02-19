@@ -144,7 +144,7 @@ stubs:
 			)
 		})
 
-		It("forwards the error", func() {
+		It("returns an error", func() {
 			err := cmd.Execute(args)
 			Expect(err).To(HaveOccurred())
 		})
@@ -159,6 +159,20 @@ stubs:
 			err := cmd.Execute(args)
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(Equal("writer error"))
+		})
+	})
+
+	Context("when there is any arguments", func() {
+		BeforeEach(func() {
+			args = []string{"extra-foo-arg1", "extra-foo-arg2"}
+		})
+
+		It("should return an error", func() {
+			err := cmd.Execute(args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("invalid additional arguments"))
+			Expect(err.Error()).To(ContainSubstring("extra-foo-arg1"))
+			Expect(err.Error()).To(ContainSubstring("extra-foo-arg2"))
 		})
 	})
 })

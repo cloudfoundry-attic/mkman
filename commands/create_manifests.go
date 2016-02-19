@@ -24,6 +24,10 @@ type CreateManifestsCommand struct {
 }
 
 func (command *CreateManifestsCommand) Execute(args []string) error {
+	if len(args) > 0 {
+		return fmt.Errorf("invalid additional arguments %v", args)
+	}
+
 	configFileContents, err := ioutil.ReadFile(command.ConfigPath)
 	if err != nil {
 		return err
