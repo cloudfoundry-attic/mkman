@@ -32,6 +32,8 @@ var _ = Describe("CreateManifestsCommand", func() {
 	)
 
 	BeforeEach(func() {
+		args = []string{}
+
 		By("Locating fixtures dir")
 		testDir := getDirOfCurrentFile()
 		fixturesDir = filepath.Join(testDir, "..", "fixtures")
