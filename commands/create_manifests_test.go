@@ -60,11 +60,11 @@ var _ = Describe("CreateManifestsCommand", func() {
 		stubPath = filepath.Join(fixturesDir, "stub.yml")
 
 		configPathContents = fmt.Sprintf(`
-cf: %s
-stemcell: %s
-stubs:
-- %s
-`,
+      cf: %s
+      stemcell: %s
+      stubs:
+      - %s
+      `,
 			cfReleasePath,
 			stemcellPath,
 			stubPath,
@@ -134,11 +134,11 @@ stubs:
 		BeforeEach(func() {
 			// force an error by giving a bad cfReleasePath
 			configPathContents = fmt.Sprintf(`
-cf: /not/a/valid/path
-stemcell: %s
-stubs:
-- %s
-`,
+        cf: /not/a/valid/path
+        stemcell: %s
+        stubs:
+        - %s
+        `,
 				stemcellPath,
 				stubPath,
 			)
