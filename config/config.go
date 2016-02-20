@@ -12,30 +12,32 @@ type Config struct {
 	StubPaths    []string `yaml:"stubs"`
 }
 
-func (c Config) Validate() *multierror.MultiError {
+func (c Config) Validate() multierror.MultiError {
 	errors := multierror.MultiError{}
 
-	if c.CFPath == "" {
-		errors.Add(fmt.Errorf("path to cf is missing"))
-	}
-
-	if c.StemcellPath == "" {
-		errors.Add(fmt.Errorf("path to stemcell is missing"))
-	}
+	errors.Add(validatePath(c.CFPath, "cf"))
+	errors.Add(validatePath(c.StemcellPath, "stemcell"))
 
 	if len(c.StubPaths) < 1 {
-		errors.Add(fmt.Errorf("at least one stub path is required"))
+		errors.Add(fmt.Errorf("value for stub path is required"))
 	}
 
 	for _, path := range c.StubPaths {
-		if path == "" {
-			errors.Add(fmt.Errorf("there is an empty stub path"))
+		err := validatePath(path, "stub path")
+		errors.Add(err)
+		if err.HasAny() {
 			break
 		}
 	}
 
-	if errors.HasAny() {
-		return &errors
+	return errors
+}
+
+func validatePath(object, name string) multierror.MultiError {
+	var errors multierror.MultiError
+	if object == "" {
+		errors.Add(fmt.Errorf("value for %s is required", name))
 	}
-	return nil
+
+	return errors
 }

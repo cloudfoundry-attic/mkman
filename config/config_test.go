@@ -19,6 +19,13 @@ var _ = Describe("Config", func() {
 		}
 	})
 
+	Context("All the fields available", func() {
+		It("should not return any error", func() {
+			err := c.Validate()
+			Expect(err.HasAny()).Should(BeFalse())
+		})
+	})
+
 	Describe("Handling errors", func() {
 		Describe("on the CFPath", func() {
 			BeforeEach(func() {
@@ -29,7 +36,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("path to cf is missing"))
+					Expect(err.Error()).To(ContainSubstring("value for cf is required"))
 				})
 			})
 		})
@@ -43,7 +50,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("path to stemcell is missing"))
+					Expect(err.Error()).To(ContainSubstring("value for stemcell is required"))
 				})
 			})
 		})
@@ -56,7 +63,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("at least one stub path is required"))
+					Expect(err.Error()).To(ContainSubstring("value for stub path is required"))
 				})
 			})
 
@@ -67,7 +74,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("there is an empty stub path"))
+					Expect(err.Error()).To(ContainSubstring("value for stub path is required"))
 				})
 			})
 		})
@@ -82,8 +89,8 @@ var _ = Describe("Config", func() {
 				It("should return the errors", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("at least one stub path is required"))
-					Expect(err.Error()).To(ContainSubstring("path to cf is missing"))
+					Expect(err.Error()).To(ContainSubstring("value for stub path is required"))
+					Expect(err.Error()).To(ContainSubstring("value for cf is required"))
 				})
 			})
 		})

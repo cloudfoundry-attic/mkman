@@ -40,7 +40,7 @@ func (command *CreateManifestsCommand) Execute(args []string) error {
 	}
 
 	errors := config.Validate()
-	if errors != nil {
+	if errors.HasAny() {
 		return errors
 	}
 
