@@ -28,29 +28,52 @@ var _ = Describe("Config", func() {
 
 	Describe("Handling errors", func() {
 		Describe("on the CFPath", func() {
-			BeforeEach(func() {
-				c.CFPath = ""
-			})
-
 			Context("when it is an empty string", func() {
+				BeforeEach(func() {
+					c.CFPath = ""
+				})
+
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
 					Expect(err.Error()).To(ContainSubstring("value for cf is required"))
 				})
 			})
+
+			Context("when it is not an absolute path", func() {
+				BeforeEach(func() {
+					c.CFPath = "./path/to/cf"
+				})
+
+				It("should return an error", func() {
+					err := c.Validate()
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(ContainSubstring("value for cf must be absolute path"))
+				})
+			})
 		})
 
 		Describe("on the StemcellPath", func() {
-			BeforeEach(func() {
-				c.StemcellPath = ""
-			})
-
 			Context("when it is an empty string", func() {
+				BeforeEach(func() {
+					c.StemcellPath = ""
+				})
+
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
 					Expect(err.Error()).To(ContainSubstring("value for stemcell is required"))
+				})
+			})
+			Context("when it is not an absolute path", func() {
+				BeforeEach(func() {
+					c.StemcellPath = "./path/to/stemcell"
+				})
+
+				It("should return an error", func() {
+					err := c.Validate()
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(ContainSubstring("value for stemcell must be absolute path"))
 				})
 			})
 		})
@@ -60,6 +83,7 @@ var _ = Describe("Config", func() {
 				BeforeEach(func() {
 					c.StubPaths = []string{}
 				})
+
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
@@ -71,10 +95,23 @@ var _ = Describe("Config", func() {
 				BeforeEach(func() {
 					c.StubPaths = []string{""}
 				})
+
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
 					Expect(err.Error()).To(ContainSubstring("value for stub path is required"))
+				})
+			})
+
+			Context("when it is not an absolute path", func() {
+				BeforeEach(func() {
+					c.StubPaths = []string{"./path/to/stub"}
+				})
+
+				It("should return an error", func() {
+					err := c.Validate()
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(ContainSubstring("value for stub path must be absolute path"))
 				})
 			})
 		})

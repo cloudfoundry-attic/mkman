@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"github.com/cloudfoundry/mkman/multierror"
 )
@@ -37,6 +38,10 @@ func validatePath(object, name string) multierror.MultiError {
 	var errors multierror.MultiError
 	if object == "" {
 		errors.Add(fmt.Errorf("value for %s is required", name))
+	}
+
+	if !filepath.IsAbs(object) {
+		errors.Add(fmt.Errorf("value for %s must be absolute path", name))
 	}
 
 	return errors
