@@ -3,6 +3,10 @@
 	"GoVersion": "go1.5.1",
 	"Deps": [
 		{
+			"ImportPath": "github.com/cloudfoundry/multierror",
+			"Rev": "c06e9144d63ebffcad7e95c7f60ff705f409fce4"
+		},
+		{
 			"ImportPath": "github.com/jessevdk/go-flags",
 			"Comment": "v1-328-gd91b7c5",
 			"Rev": "d91b7c5a5ce0b1d99d765ec3fb20ab590e52ddcb"
