@@ -39,9 +39,9 @@ func (command *CreateManifestsCommand) Execute(args []string) error {
 		return err
 	}
 
-	errors := config.Validate()
-	if errors.HasAny() {
-		return errors
+	err = config.Validate()
+	if err != nil {
+		return err
 	}
 
 	tarballReader := tarball.NewTarballReader(config.StemcellPath)

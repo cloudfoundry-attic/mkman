@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/cloudfoundry/multierror"
@@ -13,36 +14,53 @@ type Config struct {
 	StubPaths    []string `yaml:"stubs"`
 }
 
-func (c Config) Validate() multierror.MultiError {
-	errors := multierror.MultiError{}
+func (c Config) Validate() error {
+	errors := &multierror.MultiError{}
 
-	errors.Add(validatePath(c.CFPath, "cf"))
-	errors.Add(validatePath(c.StemcellPath, "stemcell"))
+	err := validatePath(c.CFPath, "cf", "directory")
+	if err != nil {
+		errors.Add(err)
+	}
+
+	err = validatePath(c.StemcellPath, "stemcell", "file")
+	if err != nil {
+		errors.Add(err)
+	}
 
 	if len(c.StubPaths) < 1 {
 		errors.Add(fmt.Errorf("value for stub path is required"))
 	}
 
 	for _, path := range c.StubPaths {
-		err := validatePath(path, "stub path")
-		errors.Add(err)
-		if err.HasAny() {
-			break
+		err := validatePath(path, "stub path", "file")
+		if err != nil {
+			errors.Add(err)
 		}
 	}
 
-	return errors
+	if errors.HasAny() {
+		return errors
+	}
+	return nil
 }
 
-func validatePath(object, name string) multierror.MultiError {
-	var errors multierror.MultiError
+func validatePath(object, name string, pathType string) error {
+	errors := &multierror.MultiError{}
 	if object == "" {
 		errors.Add(fmt.Errorf("value for %s is required", name))
 	}
 
 	if !filepath.IsAbs(object) {
-		errors.Add(fmt.Errorf("value for %s must be absolute path", name))
+		errors.Add(fmt.Errorf("value for %s must be absolute path to %s: %s", name, pathType, object))
 	}
 
-	return errors
+	_, err := os.Stat(object)
+	if os.IsNotExist(err) {
+		errors.Add(fmt.Errorf("value for %s must be valid path to %s: %s", name, pathType, object))
+	}
+
+	if errors.HasAny() {
+		return errors
+	}
+	return nil
 }
