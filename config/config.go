@@ -14,25 +14,30 @@ type Config struct {
 	StubPaths    []string `yaml:"stubs"`
 }
 
+const (
+	fileType = "file"
+	dirType  = "directory"
+)
+
 func (c Config) Validate() error {
 	errors := &multierror.MultiError{}
 
-	err := validatePath(c.CFPath, "cf", "directory")
+	err := validatePath(c.CFPath, "cf", dirType)
 	if err != nil {
 		errors.Add(err)
 	}
 
-	err = validatePath(c.StemcellPath, "stemcell", "file")
+	err = validatePath(c.StemcellPath, "stemcell", fileType)
 	if err != nil {
 		errors.Add(err)
 	}
 
 	if len(c.StubPaths) < 1 {
-		errors.Add(fmt.Errorf("value for stub path is required"))
+		errors.Add(fmt.Errorf("value for stub is required"))
 	}
 
 	for _, path := range c.StubPaths {
-		err := validatePath(path, "stub path", "file")
+		err := validatePath(path, "stub", fileType)
 		if err != nil {
 			errors.Add(err)
 		}
@@ -54,9 +59,16 @@ func validatePath(object, name string, pathType string) error {
 		errors.Add(fmt.Errorf("value for %s must be absolute path to %s: %s", name, pathType, object))
 	}
 
-	_, err := os.Stat(object)
+	stat, err := os.Stat(object)
 	if os.IsNotExist(err) {
 		errors.Add(fmt.Errorf("value for %s must be valid path to %s: %s", name, pathType, object))
+	}
+
+	if stat != nil {
+		if stat.IsDir() && pathType == fileType ||
+			stat.Mode().IsRegular() && pathType == dirType {
+			errors.Add(fmt.Errorf("value for %s must be valid path to %s: %s", name, pathType, object))
+		}
 	}
 
 	if errors.HasAny() {

@@ -96,6 +96,23 @@ var _ = Describe("Config", func() {
 					Expect(err.Error()).To(ContainSubstring(c.CFPath))
 				})
 			})
+
+			Context("when the directory is, in fact, a file", func() {
+				BeforeEach(func() {
+					cfPath := filepath.Join(tempDir, "cf-path-not-dir")
+					err := ioutil.WriteFile(cfPath, []byte("some contents"), os.ModePerm)
+					Expect(err).NotTo(HaveOccurred())
+
+					c.CFPath = cfPath
+				})
+
+				It("should return an error", func() {
+					err := c.Validate()
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(ContainSubstring("value for cf must be valid path to directory"))
+					Expect(err.Error()).To(ContainSubstring(c.CFPath))
+				})
+			})
 		})
 
 		Describe("on the StemcellPath", func() {
@@ -136,6 +153,23 @@ var _ = Describe("Config", func() {
 					Expect(err.Error()).To(ContainSubstring(c.StemcellPath))
 				})
 			})
+
+			Context("when the stemcell path is, in fact, a directory", func() {
+				BeforeEach(func() {
+					stemcellPath := filepath.Join(tempDir, "stemcell-as-a-dir")
+					err := os.MkdirAll(stemcellPath, os.ModePerm)
+					Expect(err).NotTo(HaveOccurred())
+
+					c.StemcellPath = stemcellPath
+				})
+
+				It("should return an error", func() {
+					err := c.Validate()
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(ContainSubstring("value for stemcell must be valid path to file"))
+					Expect(err.Error()).To(ContainSubstring(c.StemcellPath))
+				})
+			})
 		})
 
 		Describe("on the StubPaths", func() {
@@ -147,7 +181,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("value for stub path is required"))
+					Expect(err.Error()).To(ContainSubstring("value for stub is required"))
 				})
 			})
 
@@ -159,7 +193,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("value for stub path is required"))
+					Expect(err.Error()).To(ContainSubstring("value for stub is required"))
 				})
 			})
 
@@ -171,7 +205,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("value for stub path must be absolute path to file"))
+					Expect(err.Error()).To(ContainSubstring("value for stub must be absolute path to file"))
 					Expect(err.Error()).To(ContainSubstring(c.StubPaths[0]))
 				})
 			})
@@ -184,7 +218,24 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("value for stub path must be valid path to file"))
+					Expect(err.Error()).To(ContainSubstring("value for stub must be valid path to file"))
+					Expect(err.Error()).To(ContainSubstring(c.StubPaths[0]))
+				})
+			})
+
+			Context("when the stub path is, in fact, a directory", func() {
+				BeforeEach(func() {
+					stubPath0 := filepath.Join(tempDir, "stub-as-a-dir")
+					err := os.MkdirAll(stubPath0, os.ModePerm)
+					Expect(err).NotTo(HaveOccurred())
+
+					c.StubPaths = []string{stubPath0}
+				})
+
+				It("should return an error", func() {
+					err := c.Validate()
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(ContainSubstring("value for stub must be valid path to file"))
 					Expect(err.Error()).To(ContainSubstring(c.StubPaths[0]))
 				})
 			})
@@ -203,10 +254,10 @@ var _ = Describe("Config", func() {
 
 					Expect(err.Error()).To(ContainSubstring("value for cf is required"))
 
-					Expect(err.Error()).To(ContainSubstring("value for stub path must be valid path to file"))
+					Expect(err.Error()).To(ContainSubstring("value for stub must be valid path to file"))
 					Expect(err.Error()).To(ContainSubstring(c.StubPaths[0]))
 
-					Expect(err.Error()).To(ContainSubstring("value for stub path must be valid path to file"))
+					Expect(err.Error()).To(ContainSubstring("value for stub must be valid path to file"))
 					Expect(err.Error()).To(ContainSubstring(c.StubPaths[1]))
 				})
 			})
