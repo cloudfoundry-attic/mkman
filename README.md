@@ -15,7 +15,7 @@ This is a work in progress.
 
 Building from source requires a working installation of [golang](https://golang.org/).
 Refer to the [official documentation](https://golang.org/doc/install) for
-instructions on installing and configuring golang.
+xinstructions on installing and configuring golang.
 
 Install and run `mkman` with the following commands:
 
