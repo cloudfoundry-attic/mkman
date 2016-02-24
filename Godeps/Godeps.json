@@ -4,7 +4,7 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/cloudfoundry/multierror",
-			"Rev": "c06e9144d63ebffcad7e95c7f60ff705f409fce4"
+			"Rev": "e501806c96a4128e4d1e73a5ae8949a7cddae814"
 		},
 		{
 			"ImportPath": "github.com/jessevdk/go-flags",

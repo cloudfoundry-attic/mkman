@@ -20,6 +20,8 @@ func (e MultiError) Error() string {
 	return errStr
 }
 
+// Add an error to the collection of errors.
+// err must be non-nil
 func (e *MultiError) Add(err error) {
 	errors, ok := err.(MultiError)
 	if ok {
@@ -29,6 +31,9 @@ func (e *MultiError) Add(err error) {
 	}
 }
 
+// Add an error to the collection of errors with a provided prefix.
+// err must be non-nil
+// prefix can be empty
 func (e *MultiError) AddWithPrefix(err error, prefix string) {
 	errors, ok := err.(MultiError)
 	if ok {
