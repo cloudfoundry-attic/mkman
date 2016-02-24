@@ -911,7 +911,6 @@ properties:
         password: null
         private_endpoint: http://blobstore.service.cf.internal
         public_endpoint: http://blobstore.test_cf.yakarandash.com
-        secret: null
         username: null
     bulk_api_password: zbTuuLaap44jadlas2l312lk
     client_max_body_size: 15M
@@ -962,7 +961,6 @@ properties:
         password: null
         private_endpoint: http://blobstore.service.cf.internal
         public_endpoint: http://blobstore.test_cf.yakarandash.com
-        secret: null
         username: null
     external_host: api
     external_port: 9022
@@ -1036,7 +1034,6 @@ properties:
         password: null
         private_endpoint: http://blobstore.service.cf.internal
         public_endpoint: http://blobstore.test_cf.yakarandash.com
-        secret: null
         username: null
     quota_definitions:
       default:
@@ -1057,7 +1054,6 @@ properties:
         password: null
         private_endpoint: http://blobstore.service.cf.internal
         public_endpoint: http://blobstore.test_cf.yakarandash.com
-        secret: null
         username: null
     security_group_definitions:
     - name: public_networks
@@ -1118,7 +1114,6 @@ properties:
       password: null
       private_endpoint: http://blobstore.service.cf.internal
       public_endpoint: http://blobstore.test_cf.yakarandash.com
-      secret: null
       username: null
   ccdb: null
   collector: null
