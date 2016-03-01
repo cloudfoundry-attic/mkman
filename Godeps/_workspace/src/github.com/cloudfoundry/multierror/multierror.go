@@ -1,55 +1,81 @@
 package multierror
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+	"strings"
+)
 
 type MultiError struct {
-	errors []error
+	Message string
+	Errors  []*MultiError
+	isError bool
 }
 
-func (e MultiError) Error() string {
-	var errStr string
-	if len(e.errors) == 1 {
-		errStr = "encountered 1 error during validation:\n"
-	} else {
-		errStr = fmt.Sprintf("encountered %d errors during validation:\n", len(e.errors))
+func NewMultiError(message string) *MultiError {
+	return &MultiError{
+		Message: message,
+		Errors:  []*MultiError{},
+		isError: false,
 	}
-
-	for _, err := range e.errors {
-		errStr = fmt.Sprintf("%s%s\n", errStr, err.Error())
-	}
-	return errStr
 }
 
-// Add an error to the collection of errors.
-// err must be non-nil
-func (e *MultiError) Add(err error) {
-	errors, ok := err.(MultiError)
+func (m *MultiError) Add(e error) {
+	multierr, ok := e.(*MultiError)
 	if ok {
-		e.errors = append(e.errors, errors.errors...)
+		m.Errors = append(m.Errors, multierr)
 	} else {
-		e.errors = append(e.errors, err)
+		leafError := NewMultiError(e.Error())
+		leafError.isError = true
+		m.Errors = append(m.Errors, leafError)
 	}
 }
 
-// Add an error to the collection of errors with a provided prefix.
-// err must be non-nil
-// prefix can be empty
-func (e *MultiError) AddWithPrefix(err error, prefix string) {
-	errors, ok := err.(MultiError)
-	if ok {
-		errors.prefixAll(prefix)
-		e.errors = append(e.errors, errors.errors...)
+func (m *MultiError) isLeafNode() bool {
+	return m.isError && len(m.Errors) == 0
+}
+
+func (m *MultiError) Length() int {
+	if m.isLeafNode() {
+		return 1
+	}
+	var length int
+	for _, err := range m.Errors {
+		length += err.Length()
+	}
+	return length
+}
+
+func (m *MultiError) Error() string {
+	if m.Length() == 0 {
+		return fmt.Sprintf("there were 0 errors", m.Message)
+	}
+	return m.formatError(0)
+}
+
+func (m *MultiError) getMessage() string {
+	if m.isLeafNode() {
+		return fmt.Sprintf("* %s", m.Message)
+	}
+	var grammar string
+	if m.Length() == 1 {
+		grammar = "was 1 error"
 	} else {
-		e.errors = append(e.errors, fmt.Errorf("%s%s", prefix, err.Error()))
+		grammar = fmt.Sprintf("were %d errors", m.Length())
 	}
+	return fmt.Sprintf("there %s with '%s':", grammar, m.Message)
 }
 
-func (e *MultiError) prefixAll(prefix string) {
-	for i, err := range e.errors {
-		e.errors[i] = fmt.Errorf("%s%s", prefix, err.Error())
+func (m *MultiError) formatError(indent int) string {
+	var buffer bytes.Buffer
+	for i := 0; i < indent; i++ {
+		buffer.WriteString("    ")
 	}
-}
-
-func (e *MultiError) HasAny() bool {
-	return len(e.errors) > 0
+	whitespace := buffer.String()
+	formattedMessage := strings.Replace(m.getMessage(), "\n", fmt.Sprintf("\n%s  ", whitespace), -1)
+	buffer.WriteString(fmt.Sprintf("%s\n", formattedMessage))
+	for _, elem := range m.Errors {
+		buffer.WriteString(elem.formatError(indent + 1))
+	}
+	return buffer.String()
 }

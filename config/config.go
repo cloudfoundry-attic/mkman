@@ -43,7 +43,7 @@ func (c Config) Validate() error {
 		}
 	}
 
-	if errors.HasAny() {
+	if errors.Length() > 0 {
 		return errors
 	}
 	return nil
@@ -71,7 +71,7 @@ func validatePath(object, name string, pathType string) error {
 		}
 	}
 
-	if errors.HasAny() {
+	if errors.Length() > 0 {
 		return errors
 	}
 	return nil
