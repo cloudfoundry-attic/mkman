@@ -11,7 +11,7 @@ type FakeStubMaker struct {
 	MakeStubStub        func() (string, error)
 	makeStubMutex       sync.RWMutex
 	makeStubArgsForCall []struct{}
-	makeStubReturns struct {
+	makeStubReturns     struct {
 		result1 string
 		result2 error
 	}

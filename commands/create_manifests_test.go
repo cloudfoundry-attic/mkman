@@ -28,6 +28,7 @@ var _ = Describe("CreateManifestsCommand", func() {
 		fixturesDir         string
 		exampleManifestPath string
 		stemcellPath        string
+		etcdPath            string
 		stubPath            string
 	)
 
@@ -55,6 +56,8 @@ var _ = Describe("CreateManifestsCommand", func() {
 		stemcellPath = filepath.Join(fixturesDir, "no-image-stemcell.tgz")
 		templateContents3 := strings.Replace(string(templateContents2), "$STEMCELL_PATH", stemcellPath, -1)
 
+		etcdPath = filepath.Join(fixturesDir, "etcd-release.tgz")
+
 		exampleManifestPath = filepath.Join(tempDirPath, "manifest.yml")
 		err = ioutil.WriteFile(exampleManifestPath, []byte(templateContents3), os.ModePerm)
 		Expect(err).NotTo(HaveOccurred())
@@ -64,11 +67,13 @@ var _ = Describe("CreateManifestsCommand", func() {
 		configPathContents = fmt.Sprintf(`
       cf: %s
       stemcell: %s
+      etcd: %s
       stubs:
       - %s
       `,
 			cfReleasePath,
 			stemcellPath,
+			etcdPath,
 			stubPath,
 		)
 		configPath = filepath.Join(tempDirPath, "config.yml")
@@ -181,7 +186,7 @@ var _ = Describe("CreateManifestsCommand", func() {
 		})
 	})
 
-	Context("when there is any arguments", func() {
+	Context("when there are any extra arguments", func() {
 		BeforeEach(func() {
 			args = []string{"extra-foo-arg1", "extra-foo-arg2"}
 		})

@@ -8,6 +8,7 @@ import (
 
 	"github.com/cloudfoundry/mkman/config"
 	"github.com/cloudfoundry/mkman/manifestgenerator"
+	"github.com/cloudfoundry/mkman/releasemakers"
 	"github.com/cloudfoundry/mkman/stubmakers"
 	"github.com/cloudfoundry/mkman/tarball"
 
@@ -44,9 +45,18 @@ func (command *CreateManifestsCommand) Execute(args []string) error {
 		return err
 	}
 
-	tarballReader := tarball.NewTarballReader(config.StemcellPath)
-	stemcellStubMaker := stubmakers.NewStemcellStubMaker(tarballReader, config.StemcellPath)
-	releaseStubMaker := stubmakers.NewReleaseStubMaker(config.CFPath)
+	stemcellTarballReader := tarball.NewTarballReader(config.StemcellPath)
+	etcdTarballReader := tarball.NewTarballReader(config.EtcdPath)
+
+	cfReleaseMaker := releasemakers.NewCfReleaseMaker(config.CFPath)
+	etcdReleaseMaker := releasemakers.NewEtcdReleaseMaker(etcdTarballReader, config.EtcdPath)
+
+	stemcellStubMaker := stubmakers.NewStemcellStubMaker(stemcellTarballReader, config.StemcellPath)
+	releaseStubMaker := stubmakers.NewReleaseStubMaker([]releasemakers.ReleaseMaker{
+		cfReleaseMaker,
+		etcdReleaseMaker,
+	})
+
 	manifestGenerator := manifestgenerator.NewSpiffManifestGenerator(stemcellStubMaker, releaseStubMaker, config.StubPaths, config.CFPath)
 
 	manifest, err := manifestGenerator.GenerateManifest()

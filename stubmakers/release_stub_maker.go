@@ -1,35 +1,30 @@
 package stubmakers
 
-type releaseStubMaker struct {
-	releasePath string
+import "github.com/cloudfoundry/mkman/releasemakers"
+
+type ReleaseStub struct {
+	Releases []releasemakers.Release `yaml:"releases,omitempty"`
 }
 
-func NewReleaseStubMaker(releasePath string) StubMaker {
+type releaseStubMaker struct {
+	releaseMakers []releasemakers.ReleaseMaker
+}
+
+func NewReleaseStubMaker(r []releasemakers.ReleaseMaker) StubMaker {
 	return &releaseStubMaker{
-		releasePath: releasePath,
+		releaseMakers: r,
 	}
 }
 
 func (r *releaseStubMaker) MakeStub() (string, error) {
-	releaseStub := releaseStub{
-		Releases: []release{
-			{
-				Name:    "cf",
-				URL:     "file://" + r.releasePath,
-				Version: "create",
-			},
-		},
+	stub := ReleaseStub{}
+	for _, releaseMaker := range r.releaseMakers {
+		release, err := releaseMaker.MakeRelease()
+		if err != nil {
+			return "", err
+		}
+		stub.Releases = append(stub.Releases, *release)
 	}
 
-	return marshalTempStub(releaseStub, "release.yml")
-}
-
-type releaseStub struct {
-	Releases []release `yaml:"releases,omitempty"`
-}
-
-type release struct {
-	Name    string `yaml:"name,omitempty"`
-	Version string `yaml:"version,omitempty"`
-	URL     string `yaml:"url,omitempty"`
+	return marshalTempStub(stub, "release.yml")
 }

@@ -118,6 +118,8 @@ var _ = Describe("Executing binary", func() {
 			stemcellPath := filepath.Join(fixturesDir, "no-image-stemcell.tgz")
 			templateContents3 := strings.Replace(string(templateContents2), "$STEMCELL_PATH", stemcellPath, -1)
 
+			etcdPath := filepath.Join(fixturesDir, "etcd-release.tgz")
+
 			exampleManifestPath = filepath.Join(tempDirPath, "manifest.yml")
 			err = ioutil.WriteFile(exampleManifestPath, []byte(templateContents3), os.ModePerm)
 			Expect(err).NotTo(HaveOccurred())
@@ -133,11 +135,13 @@ var _ = Describe("Executing binary", func() {
 {
   "cf": "%s",
   "stemcell": "%s",
+	"etcd": "%s",
   "stubs": ["%s"]
 }
 `,
 				cfReleasePath,
 				stemcellPath,
+				etcdPath,
 				stubPath,
 			)
 

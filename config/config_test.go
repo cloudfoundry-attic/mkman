@@ -30,6 +30,10 @@ var _ = Describe("Config", func() {
 		err = ioutil.WriteFile(stemcellPath, []byte("some content"), os.ModePerm)
 		Expect(err).NotTo(HaveOccurred())
 
+		etcdPath := filepath.Join(tempDir, "etcd.tgz")
+		err = ioutil.WriteFile(etcdPath, []byte("some content"), os.ModePerm)
+		Expect(err).NotTo(HaveOccurred())
+
 		stubPath0 := filepath.Join(tempDir, "stub0.yml")
 		err = ioutil.WriteFile(stubPath0, []byte("---"), os.ModePerm)
 		Expect(err).NotTo(HaveOccurred())
@@ -41,6 +45,7 @@ var _ = Describe("Config", func() {
 		c = config.Config{
 			CFPath:       cfPath,
 			StemcellPath: stemcellPath,
+			EtcdPath:     etcdPath,
 			StubPaths:    []string{stubPath0, stubPath1},
 		}
 	})
@@ -62,14 +67,16 @@ var _ = Describe("Config", func() {
 			BeforeEach(func() {
 				c.CFPath = ""
 				c.StemcellPath = ""
+				c.EtcdPath = ""
 				c.StubPaths = []string{""}
 			})
 
 			It("Displays the fields the errors happened on", func() {
 				err := c.Validate()
-				Expect(err.Error()).To(ContainSubstring("there were 3 errors with 'config':"))
+				Expect(err.Error()).To(ContainSubstring("there were 4 errors with 'config':"))
 				Expect(err.Error()).To(ContainSubstring("there was 1 error with 'cf':"))
 				Expect(err.Error()).To(ContainSubstring("there was 1 error with 'stemcell':"))
+				Expect(err.Error()).To(ContainSubstring("there was 1 error with 'etcd':"))
 				Expect(err.Error()).To(ContainSubstring("there was 1 error with 'stubs':"))
 			})
 		})
@@ -184,6 +191,63 @@ var _ = Describe("Config", func() {
 					Expect(err).To(HaveOccurred())
 					Expect(err.Error()).To(ContainSubstring("value must be path to file"))
 					Expect(err.Error()).To(ContainSubstring(c.StemcellPath))
+				})
+			})
+		})
+
+		Describe("on the EtcdPath", func() {
+			Context("when it is an empty string", func() {
+				BeforeEach(func() {
+					c.EtcdPath = ""
+				})
+
+				It("should return an error", func() {
+					err := c.Validate()
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(ContainSubstring("value is required"))
+				})
+			})
+
+			Context("when it is not an absolute path", func() {
+				BeforeEach(func() {
+					c.EtcdPath = "./path/to/etcd"
+				})
+
+				It("should return an error", func() {
+					err := c.Validate()
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(ContainSubstring("value must be absolute path to file"))
+					Expect(err.Error()).To(ContainSubstring(c.EtcdPath))
+				})
+			})
+
+			Context("when the etcd file does not exist", func() {
+				BeforeEach(func() {
+					c.EtcdPath = "/path/to/invalid/etcd"
+				})
+
+				It("should return an error", func() {
+					err := c.Validate()
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(ContainSubstring("file does not exist"))
+					Expect(err.Error()).To(ContainSubstring(c.EtcdPath))
+				})
+			})
+
+			Context("when the etcd path is, in fact, a directory", func() {
+				BeforeEach(func() {
+					etcdPath := filepath.Join(tempDir, "etcd-as-a-dir")
+					err := os.MkdirAll(etcdPath, os.ModePerm)
+					Expect(err).NotTo(HaveOccurred())
+
+					c.EtcdPath = etcdPath
+				})
+
+				It("should return an error", func() {
+					err := c.Validate()
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(ContainSubstring("value must be path to file"))
+					Expect(err.Error()).To(ContainSubstring(c.EtcdPath))
 				})
 			})
 		})

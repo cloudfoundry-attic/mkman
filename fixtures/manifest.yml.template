@@ -1401,6 +1401,9 @@ releases:
 - name: cf
   url: file://$CF_RELEASE_DIR
   version: create
+- name: etcd
+  url: file:///Users/pivotal/go/src/github.com/cloudfoundry/mkman/fixtures/etcd-release.tgz
+  version: "36"
 resource_pools:
 - cloud_properties:
     availability_zone: us-east-1a
