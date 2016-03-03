@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/gopkg.in/yaml.v2"
 	"github.com/cloudfoundry/mkman/tarball"
-	"gopkg.in/yaml.v2"
 )
 
 type etcdReleaseMaker struct {
