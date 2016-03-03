@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/gopkg.in/yaml.v2"
+	"github.com/cloudfoundry/mkman/stubmakers"
 
 	"github.com/cloudfoundry/mkman/manifestgenerator"
 	"github.com/cloudfoundry/mkman/stubmakers/fakes"
@@ -67,8 +68,7 @@ releases:
 
 	JustBeforeEach(func() {
 		manifestGenerator = manifestgenerator.NewSpiffManifestGenerator(
-			stemcellStubMaker,
-			releaseStubMaker,
+			[]stubmakers.StubMaker{stemcellStubMaker, releaseStubMaker},
 			[]string{stubPath},
 			cfReleasePath,
 		)

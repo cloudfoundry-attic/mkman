@@ -8,6 +8,8 @@ import (
 
 	"github.com/cloudfoundry/mkman/config"
 	"github.com/cloudfoundry/mkman/manifestgenerator"
+	"github.com/cloudfoundry/mkman/stubmakers"
+	"github.com/cloudfoundry/mkman/stubmakers/jobtemplates"
 	releaseStubMakers "github.com/cloudfoundry/mkman/stubmakers/releases"
 	"github.com/cloudfoundry/mkman/stubmakers/releases/releasemakers"
 	stemcellStubMakers "github.com/cloudfoundry/mkman/stubmakers/stemcells"
@@ -57,8 +59,14 @@ func (command *CreateManifestsCommand) Execute(args []string) error {
 		cfReleaseMaker,
 		etcdReleaseMaker,
 	})
+	jobTemplateStubMaker := jobtemplates.NewJobTemplateStubMaker()
 
-	manifestGenerator := manifestgenerator.NewSpiffManifestGenerator(stemcellStubMaker, releaseStubMaker, config.StubPaths, config.CFPath)
+	stubMakers := []stubmakers.StubMaker{
+		stemcellStubMaker,
+		releaseStubMaker,
+		jobTemplateStubMaker,
+	}
+	manifestGenerator := manifestgenerator.NewSpiffManifestGenerator(stubMakers, config.StubPaths, config.CFPath)
 
 	manifest, err := manifestGenerator.GenerateManifest()
 	if err != nil {

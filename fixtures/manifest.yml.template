@@ -129,9 +129,9 @@ jobs:
   resource_pool: medium_z1
   templates:
   - name: etcd
-    release: cf
+    release: etcd
   - name: etcd_metrics_server
-    release: cf
+    release: etcd
   - name: metron_agent
     release: cf
   update:
@@ -149,9 +149,9 @@ jobs:
   resource_pool: medium_z2
   templates:
   - name: etcd
-    release: cf
+    release: etcd
   - name: etcd_metrics_server
-    release: cf
+    release: etcd
   - name: metron_agent
     release: cf
   update:

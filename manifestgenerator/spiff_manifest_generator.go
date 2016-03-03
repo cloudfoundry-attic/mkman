@@ -10,38 +10,33 @@ import (
 )
 
 type SpiffManifestGenerator struct {
-	stemcellStubMaker stubmakers.StubMaker
-	releaseStubMaker  stubmakers.StubMaker
-	stubPaths         []string
-	cfPath            string
+	// stemcellStubMaker stubmakers.StubMaker
+	// releaseStubMaker  stubmakers.StubMaker
+	stubMakers []stubmakers.StubMaker
+	stubPaths  []string
+	cfPath     string
 }
 
-func NewSpiffManifestGenerator(
-	stemcellStubMaker stubmakers.StubMaker,
-	releaseStubMaker stubmakers.StubMaker,
-	stubPaths []string,
-	cfPath string,
-) *SpiffManifestGenerator {
+func NewSpiffManifestGenerator(stubMakers []stubmakers.StubMaker, stubPaths []string, cfPath string) *SpiffManifestGenerator {
 	return &SpiffManifestGenerator{
-		stemcellStubMaker: stemcellStubMaker,
-		releaseStubMaker:  releaseStubMaker,
-		stubPaths:         stubPaths,
-		cfPath:            cfPath,
+		stubMakers: stubMakers,
+		stubPaths:  stubPaths,
+		cfPath:     cfPath,
 	}
 }
 
 func (g *SpiffManifestGenerator) GenerateManifest() (string, error) {
-	stemcellStubPath, err := g.stemcellStubMaker.MakeStub()
-	if err != nil {
-		return "", err
+	var stubPaths []string
+	stubPaths = append(stubPaths, g.stubPaths...)
+
+	for _, stubMaker := range g.stubMakers {
+		stubPath, err := stubMaker.MakeStub()
+		if err != nil {
+			return "", err
+		}
+		stubPaths = append(stubPaths, stubPath)
 	}
 
-	releaseStubPath, err := g.releaseStubMaker.MakeStub()
-	if err != nil {
-		return "", err
-	}
-
-	stubPaths := append(g.stubPaths, stemcellStubPath, releaseStubPath)
 	cmdArgs := append([]string{"aws"}, stubPaths...)
 
 	generateManifestScriptPath := filepath.Join(g.cfPath, "scripts/generate_deployment_manifest")
