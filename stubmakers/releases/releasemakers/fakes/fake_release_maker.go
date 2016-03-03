@@ -4,7 +4,7 @@ package fakes
 import (
 	"sync"
 
-	"github.com/cloudfoundry/mkman/releasemakers"
+	"github.com/cloudfoundry/mkman/stubmakers/releases/releasemakers"
 )
 
 type FakeReleaseMaker struct {

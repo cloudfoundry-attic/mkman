@@ -1,10 +1,11 @@
-package stubmakers_test
+package stemcells_test
 
 import (
 	"fmt"
 	"io/ioutil"
 
 	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/gopkg.in/yaml.v2"
+	"github.com/cloudfoundry/mkman/stubmakers/stemcells"
 
 	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"
 	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
@@ -35,7 +36,7 @@ version: some-version
 
 	JustBeforeEach(func() {
 		fakeTarballReader.ReadFileReturns(tarballFileContents, tarballErr)
-		stemcellStubMaker = stubmakers.NewStemcellStubMaker(fakeTarballReader, stemcellURL)
+		stemcellStubMaker = stemcells.NewStemcellStubMaker(fakeTarballReader, stemcellURL)
 	})
 
 	It("returns a path to a stemcell stub", func() {

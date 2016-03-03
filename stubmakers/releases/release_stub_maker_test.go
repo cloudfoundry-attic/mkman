@@ -1,16 +1,17 @@
-package stubmakers_test
+package releases_test
 
 import (
 	"fmt"
 	"io/ioutil"
 
 	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/gopkg.in/yaml.v2"
-	"github.com/cloudfoundry/mkman/releasemakers"
+	"github.com/cloudfoundry/mkman/stubmakers/releases"
+	"github.com/cloudfoundry/mkman/stubmakers/releases/releasemakers"
 
 	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"
 	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
-	releasefakes "github.com/cloudfoundry/mkman/releasemakers/fakes"
 	"github.com/cloudfoundry/mkman/stubmakers"
+	releasefakes "github.com/cloudfoundry/mkman/stubmakers/releases/releasemakers/fakes"
 )
 
 var _ = Describe("ReleaseStubMaker", func() {
@@ -29,7 +30,7 @@ var _ = Describe("ReleaseStubMaker", func() {
 		}
 		fakeReleaseMaker.MakeReleaseReturns(&dummyRelease, nil)
 
-		releaseStubMaker = stubmakers.NewReleaseStubMaker([]releasemakers.ReleaseMaker{
+		releaseStubMaker = releases.NewReleaseStubMaker([]releasemakers.ReleaseMaker{
 			fakeReleaseMaker,
 		})
 	})

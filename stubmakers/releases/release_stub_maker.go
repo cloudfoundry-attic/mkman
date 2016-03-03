@@ -1,6 +1,9 @@
-package stubmakers
+package releases
 
-import "github.com/cloudfoundry/mkman/releasemakers"
+import (
+	"github.com/cloudfoundry/mkman/stubmakers"
+	"github.com/cloudfoundry/mkman/stubmakers/releases/releasemakers"
+)
 
 type ReleaseStub struct {
 	Releases []releasemakers.Release `yaml:"releases,omitempty"`
@@ -10,7 +13,7 @@ type releaseStubMaker struct {
 	releaseMakers []releasemakers.ReleaseMaker
 }
 
-func NewReleaseStubMaker(r []releasemakers.ReleaseMaker) StubMaker {
+func NewReleaseStubMaker(r []releasemakers.ReleaseMaker) stubmakers.StubMaker {
 	return &releaseStubMaker{
 		releaseMakers: r,
 	}
@@ -26,5 +29,5 @@ func (r *releaseStubMaker) MakeStub() (string, error) {
 		stub.Releases = append(stub.Releases, *release)
 	}
 
-	return marshalTempStub(stub, "release.yml")
+	return stubmakers.MarshalTempStub(stub, "release.yml")
 }

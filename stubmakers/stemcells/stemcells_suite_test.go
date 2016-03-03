@@ -1,4 +1,4 @@
-package stubmakers_test
+package stemcells_test
 
 import (
 	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"
@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestStubmakers(t *testing.T) {
+func TestStemcells(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Stubmakers Suite")
+	RunSpecs(t, "Stemcells Suite")
 }

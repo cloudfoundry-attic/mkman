@@ -3,7 +3,7 @@ package releasemakers_test
 import (
 	"fmt"
 
-	"github.com/cloudfoundry/mkman/releasemakers"
+	"github.com/cloudfoundry/mkman/stubmakers/releases/releasemakers"
 	"github.com/cloudfoundry/mkman/tarball/fakes"
 
 	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"

@@ -1,9 +1,10 @@
-package stubmakers
+package stemcells
 
 import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/cloudfoundry/mkman/stubmakers"
 	"github.com/cloudfoundry/mkman/tarball"
 
 	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/gopkg.in/yaml.v2"
@@ -14,7 +15,7 @@ type stemcellStubMaker struct {
 	stemcellURL   string
 }
 
-func NewStemcellStubMaker(tarballReader tarball.TarballReader, stemcellURL string) StubMaker {
+func NewStemcellStubMaker(tarballReader tarball.TarballReader, stemcellURL string) stubmakers.StubMaker {
 	return &stemcellStubMaker{
 		tarballReader: tarballReader,
 		stemcellURL:   stemcellURL,
@@ -50,7 +51,7 @@ func (s *stemcellStubMaker) MakeStub() (string, error) {
 	stemcellStub.Meta.Stemcell.Name = manifest.Name
 	stemcellStub.Meta.Stemcell.Version = manifest.Version
 
-	return marshalTempStub(stemcellStub, "stemcell.yml")
+	return stubmakers.MarshalTempStub(stemcellStub, "stemcell.yml")
 }
 
 type stemcellStub struct {

@@ -13,7 +13,7 @@ type StubMaker interface {
 	MakeStub() (string, error)
 }
 
-func marshalTempStub(objectToMarshal interface{}, filename string) (string, error) {
+func MarshalTempStub(objectToMarshal interface{}, filename string) (string, error) {
 	stubContents, err := yaml.Marshal(objectToMarshal)
 	if err != nil {
 		// We cannot test this because it is too hard to get the marshaller to

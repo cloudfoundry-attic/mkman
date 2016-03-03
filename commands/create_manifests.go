@@ -8,8 +8,9 @@ import (
 
 	"github.com/cloudfoundry/mkman/config"
 	"github.com/cloudfoundry/mkman/manifestgenerator"
-	"github.com/cloudfoundry/mkman/releasemakers"
-	"github.com/cloudfoundry/mkman/stubmakers"
+	releaseStubMakers "github.com/cloudfoundry/mkman/stubmakers/releases"
+	"github.com/cloudfoundry/mkman/stubmakers/releases/releasemakers"
+	stemcellStubMakers "github.com/cloudfoundry/mkman/stubmakers/stemcells"
 	"github.com/cloudfoundry/mkman/tarball"
 
 	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/gopkg.in/yaml.v2"
@@ -51,8 +52,8 @@ func (command *CreateManifestsCommand) Execute(args []string) error {
 	cfReleaseMaker := releasemakers.NewCfReleaseMaker(config.CFPath)
 	etcdReleaseMaker := releasemakers.NewEtcdReleaseMaker(etcdTarballReader, config.EtcdPath)
 
-	stemcellStubMaker := stubmakers.NewStemcellStubMaker(stemcellTarballReader, config.StemcellPath)
-	releaseStubMaker := stubmakers.NewReleaseStubMaker([]releasemakers.ReleaseMaker{
+	stemcellStubMaker := stemcellStubMakers.NewStemcellStubMaker(stemcellTarballReader, config.StemcellPath)
+	releaseStubMaker := releaseStubMakers.NewReleaseStubMaker([]releasemakers.ReleaseMaker{
 		cfReleaseMaker,
 		etcdReleaseMaker,
 	})

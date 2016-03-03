@@ -1,7 +1,7 @@
 package releasemakers_test
 
 import (
-	"github.com/cloudfoundry/mkman/releasemakers"
+	"github.com/cloudfoundry/mkman/stubmakers/releases/releasemakers"
 
 	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"
 	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
