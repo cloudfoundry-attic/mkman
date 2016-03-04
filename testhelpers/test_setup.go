@@ -71,12 +71,13 @@ func (setup *TestSetup) createExampleManifest() {
 	manifestTemplatePath := filepath.Join(setup.fixturesDir, "manifest.yml.template")
 	templateContents, err := ioutil.ReadFile(manifestTemplatePath)
 	Expect(err).NotTo(HaveOccurred())
-	templateContents2 := strings.Replace(string(templateContents), "$CF_RELEASE_DIR", setup.cfReleasePath, -1)
 
+	templateContents2 := strings.Replace(string(templateContents), "$CF_RELEASE_DIR", setup.cfReleasePath, -1)
 	templateContents3 := strings.Replace(string(templateContents2), "$STEMCELL_PATH", setup.stemcellPath, -1)
+	templateContents4 := strings.Replace(string(templateContents3), "$ETCD_RELEASE_PATH", setup.etcdPath, -1)
 
 	exampleManifestPath := filepath.Join(setup.TempDirPath, "manifest.yml")
-	err = ioutil.WriteFile(exampleManifestPath, []byte(templateContents3), os.ModePerm)
+	err = ioutil.WriteFile(exampleManifestPath, []byte(templateContents4), os.ModePerm)
 	Expect(err).NotTo(HaveOccurred())
 
 	setup.ExampleManifestPath = exampleManifestPath
