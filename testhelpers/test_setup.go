@@ -69,15 +69,16 @@ func (setup *TestSetup) WriteConfig() {
 func (setup *TestSetup) createExampleManifest() {
 	By("Creating manifest template")
 	manifestTemplatePath := filepath.Join(setup.fixturesDir, "manifest.yml.template")
-	templateContents, err := ioutil.ReadFile(manifestTemplatePath)
+	templateBytes, err := ioutil.ReadFile(manifestTemplatePath)
+	templateContents := string(templateBytes)
 	Expect(err).NotTo(HaveOccurred())
 
-	templateContents2 := strings.Replace(string(templateContents), "$CF_RELEASE_DIR", setup.cfReleasePath, -1)
-	templateContents3 := strings.Replace(string(templateContents2), "$STEMCELL_PATH", setup.stemcellPath, -1)
-	templateContents4 := strings.Replace(string(templateContents3), "$ETCD_RELEASE_PATH", setup.etcdPath, -1)
+	templateContents = strings.Replace(string(templateContents), "$CF_RELEASE_DIR", setup.cfReleasePath, -1)
+	templateContents = strings.Replace(string(templateContents), "$STEMCELL_PATH", setup.stemcellPath, -1)
+	templateContents = strings.Replace(string(templateContents), "$ETCD_RELEASE_PATH", setup.etcdPath, -1)
 
 	exampleManifestPath := filepath.Join(setup.TempDirPath, "manifest.yml")
-	err = ioutil.WriteFile(exampleManifestPath, []byte(templateContents4), os.ModePerm)
+	err = ioutil.WriteFile(exampleManifestPath, []byte(templateContents), os.ModePerm)
 	Expect(err).NotTo(HaveOccurred())
 
 	setup.ExampleManifestPath = exampleManifestPath
