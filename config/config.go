@@ -16,8 +16,9 @@ type Config struct {
 }
 
 const (
-	fileType = "file"
-	dirType  = "directory"
+	none     = 0
+	fileType = 1 << iota
+	dirType  = 1 << iota
 )
 
 func (c Config) Validate() error {
@@ -33,7 +34,7 @@ func (c Config) Validate() error {
 		errors.Add(err)
 	}
 
-	err = validatePath(c.EtcdPath, "etcd", fileType)
+	err = validatePath(c.EtcdPath, "etcd", fileType|dirType)
 	if err != nil {
 		errors.Add(err)
 	}
@@ -60,7 +61,20 @@ func (c Config) Validate() error {
 	return nil
 }
 
-func validatePath(object, name string, pathType string) error {
+func validatePath(object, name string, allowablePathType uint) error {
+	translate := func(allowedType uint) string {
+		switch allowedType {
+		case fileType:
+			return "file"
+		case dirType:
+			return "directory"
+		case (fileType | dirType):
+			return "file or directory"
+		default:
+			panic("unhandled")
+		}
+	}
+
 	errors := multierror.NewMultiError(name)
 	if object == "" {
 		errors.Add(fmt.Errorf("value is required"))
@@ -69,27 +83,40 @@ func validatePath(object, name string, pathType string) error {
 	}
 
 	if !filepath.IsAbs(object) {
-		errors.Add(fmt.Errorf("value must be absolute path to %s: '%s'", pathType, object))
+		errors.Add(fmt.Errorf("value must be absolute path to %s: '%s'", translate(allowablePathType), object))
 		// Return when next error does not make sense
 		return errors
 	}
 
-	stat, err := os.Stat(object)
+	fileInfo, err := os.Stat(object)
 	if os.IsNotExist(err) {
-		errors.Add(fmt.Errorf("%s does not exist: '%s'", pathType, object))
+		errors.Add(fmt.Errorf("%s does not exist: '%s'", translate(allowablePathType), object))
 		// Return when next error does not make sense
 		return errors
 	}
 
-	if stat != nil {
-		if stat.IsDir() && pathType == fileType ||
-			stat.Mode().IsRegular() && pathType == dirType {
-			errors.Add(fmt.Errorf("value must be path to %s: '%s'", pathType, object))
-		}
+	if !isFileTypeAllwed(fileInfo, allowablePathType) {
+		errors.Add(fmt.Errorf("value must be path to %s: '%s'", translate(allowablePathType), object))
 	}
 
 	if errors.Length() > 0 {
 		return errors
 	}
 	return nil
+}
+
+func isFileTypeAllwed(fileInfo os.FileInfo, allowedPathType uint) bool {
+	if fileInfo == nil {
+		return false
+	}
+
+	if fileInfo.Mode().IsRegular() && (allowedPathType&fileType != none) {
+		return true
+	}
+
+	if fileInfo.Mode().IsDir() && (allowedPathType&dirType != none) {
+		return true
+	}
+
+	return false
 }

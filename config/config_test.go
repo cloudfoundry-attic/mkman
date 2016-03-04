@@ -55,8 +55,21 @@ var _ = Describe("Config", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	Context("All the fields available", func() {
-		It("should not return any error", func() {
+	It("should not return any error", func() {
+		err := c.Validate()
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	Context("when the etcd path is, in fact, a directory", func() {
+		BeforeEach(func() {
+			etcdPath := filepath.Join(tempDir, "etcd-as-a-dir")
+			err := os.MkdirAll(etcdPath, os.ModePerm)
+			Expect(err).NotTo(HaveOccurred())
+
+			c.EtcdPath = etcdPath
+		})
+
+		It("should not return an error", func() {
 			err := c.Validate()
 			Expect(err).NotTo(HaveOccurred())
 		})
@@ -229,27 +242,11 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("file does not exist"))
+					Expect(err.Error()).To(ContainSubstring("file or directory does not exist"))
 					Expect(err.Error()).To(ContainSubstring(c.EtcdPath))
 				})
 			})
 
-			Context("when the etcd path is, in fact, a directory", func() {
-				BeforeEach(func() {
-					etcdPath := filepath.Join(tempDir, "etcd-as-a-dir")
-					err := os.MkdirAll(etcdPath, os.ModePerm)
-					Expect(err).NotTo(HaveOccurred())
-
-					c.EtcdPath = etcdPath
-				})
-
-				It("should return an error", func() {
-					err := c.Validate()
-					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("value must be path to file"))
-					Expect(err.Error()).To(ContainSubstring(c.EtcdPath))
-				})
-			})
 		})
 
 		Describe("on the StubPaths", func() {
