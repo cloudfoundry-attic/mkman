@@ -5,11 +5,11 @@ import (
 	"regexp"
 	"strings"
 
+	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"
+	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/gopkg.in/yaml.v2"
 	"github.com/cloudfoundry/mkman/stubmakers"
 	"github.com/cloudfoundry/mkman/stubmakers/jobtemplates"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-	"gopkg.in/yaml.v2"
 )
 
 var _ = Describe("TemplateStubMaker", func() {
