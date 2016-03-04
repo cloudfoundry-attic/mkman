@@ -1,13 +1,12 @@
 package tarball_test
 
 import (
-	"path"
 	"path/filepath"
-	"runtime"
 
 	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"
 	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
 	"github.com/cloudfoundry/mkman/tarball"
+	"github.com/cloudfoundry/mkman/testhelpers"
 )
 
 var _ = Describe("TarballReader", func() {
@@ -17,7 +16,7 @@ var _ = Describe("TarballReader", func() {
 
 	BeforeEach(func() {
 		By("Locating fixtures dir")
-		testDir := getDirOfCurrentFile()
+		testDir := testhelpers.GetDirOfCurrentFile()
 		fixturesDir = filepath.Join(testDir, "..", "fixtures")
 
 		tarballPath = filepath.Join(fixturesDir, "no-image-stemcell.tgz")
@@ -67,8 +66,3 @@ var _ = Describe("TarballReader", func() {
 		})
 	})
 })
-
-func getDirOfCurrentFile() string {
-	_, filename, _, _ := runtime.Caller(1)
-	return path.Dir(filename)
-}

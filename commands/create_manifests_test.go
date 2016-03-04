@@ -6,105 +6,53 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
-	"runtime"
-	"strings"
 
 	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"
 	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
 	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega/gexec"
 	"github.com/cloudfoundry/mkman/commands"
+	"github.com/cloudfoundry/mkman/testhelpers"
 )
 
 var _ = Describe("CreateManifestsCommand", func() {
 	var (
-		args                []string
-		cmd                 commands.CreateManifestsCommand
-		configPathContents  string
-		configPath          string
-		tempDirPath         string
-		outputManifest      *bytes.Buffer
-		fixturesDir         string
-		exampleManifestPath string
-		stemcellPath        string
-		etcdPath            string
-		stubPath            string
+		args           []string
+		cmd            commands.CreateManifestsCommand
+		outputManifest *bytes.Buffer
+		setup          *testhelpers.TestSetup
 	)
 
 	BeforeEach(func() {
+		setup = testhelpers.SetupTest()
+
 		args = []string{}
-
-		By("Locating fixtures dir")
-		testDir := getDirOfCurrentFile()
-		fixturesDir = filepath.Join(testDir, "..", "fixtures")
-
-		By("Ensuring $CF_RELEASE_DIR is set")
-		cfReleasePath := os.Getenv("CF_RELEASE_DIR")
-		Expect(cfReleasePath).NotTo(BeEmpty(), "$CF_RELEASE_DIR must be provided")
-
-		var err error
-		tempDirPath, err = ioutil.TempDir("", "")
-		Expect(err).NotTo(HaveOccurred())
-
-		By("Creating manifest template")
-		manifestTemplatePath := filepath.Join(fixturesDir, "manifest.yml.template")
-		templateContents, err := ioutil.ReadFile(manifestTemplatePath)
-		Expect(err).NotTo(HaveOccurred())
-		templateContents2 := strings.Replace(string(templateContents), "$CF_RELEASE_DIR", cfReleasePath, -1)
-
-		stemcellPath = filepath.Join(fixturesDir, "no-image-stemcell.tgz")
-		templateContents3 := strings.Replace(string(templateContents2), "$STEMCELL_PATH", stemcellPath, -1)
-
-		etcdPath = filepath.Join(fixturesDir, "etcd-release.tgz")
-
-		exampleManifestPath = filepath.Join(tempDirPath, "manifest.yml")
-		err = ioutil.WriteFile(exampleManifestPath, []byte(templateContents3), os.ModePerm)
-		Expect(err).NotTo(HaveOccurred())
-
-		stubPath = filepath.Join(fixturesDir, "stub.yml")
-
-		configPathContents = fmt.Sprintf(`
-      cf: %s
-      stemcell: %s
-      etcd: %s
-      stubs:
-      - %s
-      `,
-			cfReleasePath,
-			stemcellPath,
-			etcdPath,
-			stubPath,
-		)
-		configPath = filepath.Join(tempDirPath, "config.yml")
-
 		outputManifest = &bytes.Buffer{}
 
 		cmd = commands.CreateManifestsCommand{
 			OutputWriter: outputManifest,
-			ConfigPath:   configPath,
+			ConfigPath:   setup.ConfigPath,
 		}
 	})
 
 	AfterEach(func() {
-		err := os.RemoveAll(tempDirPath)
+		err := os.RemoveAll(setup.TempDirPath)
 		Expect(err).ShouldNot(HaveOccurred())
 	})
 
 	JustBeforeEach(func() {
-		err := ioutil.WriteFile(configPath, []byte(configPathContents), os.ModePerm)
-		Expect(err).ShouldNot(HaveOccurred())
+		setup.WriteConfig()
 	})
 
 	It("creates manifest without error", func() {
 		err := cmd.Execute(args)
 		Expect(err).NotTo(HaveOccurred())
 
-		manifestPath := filepath.Join(tempDirPath, "output_manifest.yml")
+		manifestPath := filepath.Join(setup.TempDirPath, "output_manifest.yml")
 		err = ioutil.WriteFile(manifestPath, outputManifest.Bytes(), os.ModePerm)
 		Expect(err).NotTo(HaveOccurred())
 
-		diffCommand := exec.Command("diff", "-C3", manifestPath, exampleManifestPath)
+		diffCommand := exec.Command("diff", "-C3", manifestPath, setup.ExampleManifestPath)
 		diffSession, err := gexec.Start(diffCommand, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -127,7 +75,7 @@ var _ = Describe("CreateManifestsCommand", func() {
 
 	Context("when the path points to an invalid config", func() {
 		BeforeEach(func() {
-			configPathContents = "{{"
+			setup.ConfigContents = "{{"
 		})
 
 		It("returns an error", func() {
@@ -140,26 +88,23 @@ var _ = Describe("CreateManifestsCommand", func() {
 	Context("when the manifest generator returns an error", func() {
 		BeforeEach(func() {
 			// force an error by giving a bad cfReleasePath
-			configPathContents = fmt.Sprintf(`
+			setup.ConfigContents = `
         cf: /not/a/valid/path
-        stemcell: %s
+        stemcell:
         stubs:
-        - %s
-        `,
-				stemcellPath,
-				stubPath,
-			)
+        `
 		})
 
 		It("returns an error", func() {
 			err := cmd.Execute(args)
 			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("/not/a/valid/path"))
 		})
 	})
 
 	Context("when the config file has empty values", func() {
 		BeforeEach(func() {
-			configPathContents = fmt.Sprintf(`
+			setup.ConfigContents = fmt.Sprintf(`
         cf: 
         stemcell: 
         stubs:
@@ -176,7 +121,7 @@ var _ = Describe("CreateManifestsCommand", func() {
 
 	Context("when writing the output fails", func() {
 		BeforeEach(func() {
-			cmd.OutputWriter = &alwaysErrorWriter{}
+			cmd.OutputWriter = &testhelpers.AlwaysErrorWriter{}
 		})
 
 		It("forwards the error", func() {
@@ -200,14 +145,3 @@ var _ = Describe("CreateManifestsCommand", func() {
 		})
 	})
 })
-
-func getDirOfCurrentFile() string {
-	_, filename, _, _ := runtime.Caller(1)
-	return path.Dir(filename)
-}
-
-type alwaysErrorWriter struct{}
-
-func (w *alwaysErrorWriter) Write(p []byte) (int, error) {
-	return 0, fmt.Errorf("writer error")
-}
