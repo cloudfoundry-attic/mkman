@@ -60,18 +60,31 @@ var _ = Describe("Config", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	Context("when the etcd path is, in fact, a directory", func() {
-		BeforeEach(func() {
-			etcdPath := filepath.Join(tempDir, "etcd-as-a-dir")
-			err := os.MkdirAll(etcdPath, os.ModePerm)
-			Expect(err).NotTo(HaveOccurred())
+	Context("with etcd", func() {
+		Context("when the path is, in fact, a directory", func() {
+			BeforeEach(func() {
+				etcdPath := filepath.Join(tempDir, "etcd-as-a-dir")
+				err := os.MkdirAll(etcdPath, os.ModePerm)
+				Expect(err).NotTo(HaveOccurred())
 
-			c.EtcdPath = etcdPath
+				c.EtcdPath = etcdPath
+			})
+
+			It("should not return an error", func() {
+				err := c.Validate()
+				Expect(err).NotTo(HaveOccurred())
+			})
 		})
 
-		It("should not return an error", func() {
-			err := c.Validate()
-			Expect(err).NotTo(HaveOccurred())
+		Context("when the path is set to director-latest", func() {
+			BeforeEach(func() {
+				c.EtcdPath = "director-latest"
+			})
+
+			It("should not return an error", func() {
+				err := c.Validate()
+				Expect(err).NotTo(HaveOccurred())
+			})
 		})
 	})
 
@@ -229,7 +242,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("value must be absolute path to file"))
+					Expect(err.Error()).To(ContainSubstring("must be either a valid version alias or an absolute path"))
 					Expect(err.Error()).To(ContainSubstring(c.EtcdPath))
 				})
 			})
