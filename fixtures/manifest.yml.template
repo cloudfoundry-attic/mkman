@@ -902,6 +902,10 @@ properties:
     port: 80
     secure_link:
       secret: null
+    tls:
+      cert: null
+      port: 443
+      private_key: null
   cc:
     allow_app_ssh_access: true
     allowed_cors_domains: []
@@ -925,7 +929,7 @@ properties:
         region: us-east-1
       webdav_config:
         password: null
-        private_endpoint: http://blobstore.service.cf.internal
+        private_endpoint: https://blobstore.service.cf.internal
         public_endpoint: http://blobstore.test_cf.yakarandash.com
         username: null
     bulk_api_password: zbTuuLaap44jadlas2l312lk
@@ -975,7 +979,7 @@ properties:
       max_staged_droplets_stored: null
       webdav_config:
         password: null
-        private_endpoint: http://blobstore.service.cf.internal
+        private_endpoint: https://blobstore.service.cf.internal
         public_endpoint: http://blobstore.test_cf.yakarandash.com
         username: null
     external_host: api
@@ -1048,7 +1052,7 @@ properties:
       max_valid_packages_stored: null
       webdav_config:
         password: null
-        private_endpoint: http://blobstore.service.cf.internal
+        private_endpoint: https://blobstore.service.cf.internal
         public_endpoint: http://blobstore.test_cf.yakarandash.com
         username: null
     quota_definitions:
@@ -1069,7 +1073,7 @@ properties:
       resource_directory_key: test_cf.yakarandash.com-cc-resources
       webdav_config:
         password: null
-        private_endpoint: http://blobstore.service.cf.internal
+        private_endpoint: https://blobstore.service.cf.internal
         public_endpoint: http://blobstore.test_cf.yakarandash.com
         username: null
     security_group_definitions:
@@ -1129,7 +1133,7 @@ properties:
     users_can_select_backend: true
     webdav_config:
       password: null
-      private_endpoint: http://blobstore.service.cf.internal
+      private_endpoint: https://blobstore.service.cf.internal
       public_endpoint: http://blobstore.test_cf.yakarandash.com
       username: null
   ccdb: null
