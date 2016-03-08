@@ -158,7 +158,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("value must be path to directory"))
+					Expect(err.Error()).To(ContainSubstring("value must be absolute path to directory"))
 					Expect(err.Error()).To(ContainSubstring(c.CFPath))
 				})
 			})
@@ -215,7 +215,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("value must be path to file"))
+					Expect(err.Error()).To(ContainSubstring("value must be absolute path to file"))
 					Expect(err.Error()).To(ContainSubstring(c.StemcellPath))
 				})
 			})
@@ -325,7 +325,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("value must be path to file"))
+					Expect(err.Error()).To(ContainSubstring("value must be absolute path to file"))
 					Expect(err.Error()).To(ContainSubstring(c.StubPaths[0]))
 				})
 			})

@@ -71,8 +71,8 @@ func (v *validator) validatePath(validations Validation) error {
 		return errors
 	}
 
-	if !isFileTypeAllwed(fileInfo, validations.AllowedType) {
-		errors.Add(fmt.Errorf("value must be path to %s: '%s'", translate(validations.AllowedType), v.object))
+	if !isFileTypeAllowed(fileInfo, validations.AllowedType) {
+		errors.Add(fmt.Errorf("value must be absolute path to %s: '%s'", translate(validations.AllowedType), v.object))
 	}
 
 	if errors.Length() > 0 {
@@ -99,7 +99,7 @@ func (v *validator) validateVersionAlias(validations Validation) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("something")
+	return fmt.Errorf("version alias not found")
 }
 
 func translate(allowedType uint) string {
@@ -115,7 +115,7 @@ func translate(allowedType uint) string {
 	}
 }
 
-func isFileTypeAllwed(fileInfo os.FileInfo, allowedPathType uint) bool {
+func isFileTypeAllowed(fileInfo os.FileInfo, allowedPathType uint) bool {
 	if fileInfo == nil {
 		return false
 	}

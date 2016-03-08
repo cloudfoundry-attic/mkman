@@ -20,6 +20,7 @@ const (
 )
 
 func (c Config) Validate() error {
+
 	errors := multierror.NewMultiError("config")
 
 	validator := NewValidator(c.CFPath, "cf")
