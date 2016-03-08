@@ -1,4 +1,4 @@
-package config_test
+package validators_test
 
 import (
 	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"

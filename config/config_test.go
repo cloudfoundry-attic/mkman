@@ -125,7 +125,7 @@ var _ = Describe("Config", func() {
 					c.CFPath = "./path/to/cf"
 				})
 
-				It("should return an error", func() {
+				FIt("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
 					Expect(err.Error()).To(ContainSubstring("value must be absolute path to directory"))
