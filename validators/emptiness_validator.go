@@ -1,10 +1,6 @@
 package validators
 
-import (
-	"fmt"
-
-	"github.com/cloudfoundry/multierror"
-)
+import "fmt"
 
 type emptinessValidator struct{}
 
@@ -12,12 +8,13 @@ func NewEmptinessValidator() Validator {
 	return &emptinessValidator{}
 }
 
-func (ev *emptinessValidator) Validate(vt ValidationTarget) *multierror.MultiError {
-	errors := multierror.NewMultiError(vt.name)
+func (e *emptinessValidator) Name() string {
+	return "not be empty"
+}
+
+func (ev *emptinessValidator) Validate(vt ValidationTarget) error {
 	if vt.object == "" {
-		errors.Add(fmt.Errorf("value is required"))
-		// Return when next error does not make sense
-		return errors
+		return fmt.Errorf("value is required")
 	}
 	return nil
 }

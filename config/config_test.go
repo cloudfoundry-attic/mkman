@@ -125,10 +125,10 @@ var _ = Describe("Config", func() {
 					c.CFPath = "./path/to/cf"
 				})
 
-				FIt("should return an error", func() {
+				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("value must be absolute path to directory"))
+					Expect(err.Error()).To(ContainSubstring("value must be absolute path"))
 					Expect(err.Error()).To(ContainSubstring(c.CFPath))
 				})
 			})
@@ -185,7 +185,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("value must be absolute path to file"))
+					Expect(err.Error()).To(ContainSubstring("value must be absolute path"))
 					Expect(err.Error()).To(ContainSubstring(c.StemcellPath))
 				})
 			})
@@ -221,7 +221,7 @@ var _ = Describe("Config", func() {
 			})
 		})
 
-		Describe("on the EtcdPath", func() {
+		FDescribe("on the EtcdPath", func() {
 			Context("when it is an empty string", func() {
 				BeforeEach(func() {
 					c.EtcdPath = ""
@@ -242,7 +242,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("must be either a valid version alias or an absolute path"))
+					Expect(err.Error()).To(MatchRegexp(".*must be valid version alias or absolute path: %s", c.EtcdPath))
 					Expect(err.Error()).To(ContainSubstring(c.EtcdPath))
 				})
 			})
@@ -255,11 +255,10 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("file or directory does not exist"))
+					Expect(err.Error()).To(MatchRegexp(".*must be path to file or path to directory: %s", c.EtcdPath))
 					Expect(err.Error()).To(ContainSubstring(c.EtcdPath))
 				})
 			})
-
 		})
 
 		Describe("on the StubPaths", func() {

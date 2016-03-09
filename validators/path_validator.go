@@ -3,51 +3,46 @@ package validators
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
-	"github.com/cloudfoundry/multierror" //TODO Godep these paths
+	//TODO Godep these paths
+)
+
+const (
+	none     = 0
+	FileType = 1 << iota
+	DirType  = 1 << iota
 )
 
 type pathValidator struct {
-	validations Validation
+	allowedType uint
 }
 
-func NewPathValidator(validation Validation) Validator {
+func NewPathValidator(allowedType uint) Validator {
 	return &pathValidator{
-		validations: validation,
+		allowedType: allowedType,
 	}
 }
 
-func (pv *pathValidator) Validate(vt ValidationTarget) *multierror.MultiError {
+func (pv *pathValidator) Name() string {
+	return "valid path"
+}
 
-	fmt.Println("In Path Validator ...")
-	errors := multierror.NewMultiError(vt.name)
-
-	err := pv.validateIsAbsPath(vt)
-	if err != nil {
-		errors.Add(err)
-		return errors
-	}
-
+func (pv *pathValidator) Validate(vt ValidationTarget) error {
 	fileInfo, err := os.Stat(vt.object)
 	if os.IsNotExist(err) {
-		errors.Add(fmt.Errorf("%s does not exist: '%s'", pv.translate(), vt.object))
+		return fmt.Errorf("%s does not exist: '%s'", pv.translate(), vt.object)
 		// Return when next error does not make sense
-		return errors
 	}
 
 	if !pv.isFileTypeAllowed(fileInfo) {
-		errors.Add(fmt.Errorf("value must be absolute path to %s: '%s'", pv.translate(), vt.object))
+		return fmt.Errorf("value must be path to %s: '%s'", pv.translate(), vt.object)
 	}
 
-	if errors.Length() > 0 {
-		return errors
-	}
 	return nil
 }
 
 func (pv *pathValidator) translate() string {
-	switch pv.validations.AllowedType {
+	switch pv.allowedType {
 	case FileType:
 		return "file"
 	case DirType:
@@ -59,28 +54,16 @@ func (pv *pathValidator) translate() string {
 	}
 }
 
-func (pv pathValidator) validateIsAbsPath(vt ValidationTarget) error {
-	if filepath.IsAbs(vt.object) {
-		return nil
-	}
-
-	if pv.validations.VersionAliases != nil {
-		return fmt.Errorf("value %s must be either a valid version alias or an absolute path", vt.object)
-	} else {
-		return fmt.Errorf("value must be absolute path to %s: '%s'", pv.translate(), vt.object)
-	}
-}
-
 func (pv pathValidator) isFileTypeAllowed(fileInfo os.FileInfo) bool {
 	if fileInfo == nil {
 		return false
 	}
 
-	if fileInfo.Mode().IsRegular() && (pv.validations.AllowedType&FileType != none) {
+	if fileInfo.Mode().IsRegular() && (pv.allowedType&FileType != none) {
 		return true
 	}
 
-	if fileInfo.Mode().IsDir() && (pv.validations.AllowedType&DirType != none) {
+	if fileInfo.Mode().IsDir() && (pv.allowedType&DirType != none) {
 		return true
 	}
 
