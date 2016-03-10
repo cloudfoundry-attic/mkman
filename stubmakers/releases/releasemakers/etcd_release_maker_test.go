@@ -2,6 +2,8 @@ package releasemakers_test
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
 
 	"github.com/cloudfoundry/mkman/stubmakers/releases/releasemakers"
 	"github.com/cloudfoundry/mkman/tarball/fakes"
@@ -18,12 +20,15 @@ var _ = Describe("EtcdReleaseMaker", func() {
 		tarballFileContents []byte
 		etcdURL             string
 		version             string
+		tmpDir              string
 	)
 
 	BeforeEach(func() {
 		version = "some-version"
 
-		etcdURL = "/path/to/tarball.tgz"
+		var err error
+		tmpDir, err = ioutil.TempDir("", "")
+		Expect(err).NotTo(HaveOccurred())
 		fakeTarballReader = &fakes.FakeTarballReader{}
 
 		tarballErr = nil
@@ -32,6 +37,15 @@ var _ = Describe("EtcdReleaseMaker", func() {
 name: some-name
 version: %s
 `, version))
+
+		err = ioutil.WriteFile(tmpDir+"/tarball.tgz", []byte{}, os.ModeTemporary)
+		Expect(err).NotTo(HaveOccurred())
+		etcdURL = tmpDir + "/tarball.tgz"
+	})
+
+	AfterEach(func() {
+		err := os.RemoveAll(tmpDir)
+		Expect(err).NotTo(HaveOccurred())
 	})
 
 	JustBeforeEach(func() {
@@ -40,6 +54,7 @@ version: %s
 	})
 
 	It("returns a release stub", func() {
+		println(etcdURL)
 		etcdRelease, err := releaseMaker.MakeRelease()
 
 		Expect(err).NotTo(HaveOccurred())
@@ -54,16 +69,69 @@ version: %s
 		Expect(fakeTarballReader.ReadFileArgsForCall(0)).To(Equal("./release.MF"))
 	})
 
-	Context("when the path extension is not .tgz", func() {
+	Context("when the file does not exist", func() {
 		BeforeEach(func() {
-			etcdURL = "/path/to/tarball"
+			etcdURL = "/non/existant/file.tgz"
 		})
 
-		It("returns an error", func() {
+		It("should return an error", func() {
 			release, err := releaseMaker.MakeRelease()
 			Expect(release).To(BeNil())
 			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(Equal("unrecognized etcd URL"))
+			Expect(err.Error()).To(MatchRegexp("no such file or directory"))
+		})
+	})
+
+	Context("when the path extension is not .tgz", func() {
+		Context("when the path is a directory", func() {
+			BeforeEach(func() {
+				var err error
+				version = "create"
+				etcdURL, err = ioutil.TempDir("", "")
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("returns a release stub", func() {
+				etcdRelease, err := releaseMaker.MakeRelease()
+
+				Expect(err).NotTo(HaveOccurred())
+				Expect(etcdRelease.Name).To(Equal("etcd"))
+				Expect(etcdRelease.URL).To(Equal(etcdURL))
+				Expect(etcdRelease.Version).To(Equal(version))
+			})
+
+			Context("with errors", func() {
+				Context("when the directory does not exist", func() {
+					BeforeEach(func() {
+						etcdURL = "/non/existant/directory"
+					})
+
+					It("should return an error", func() {
+						release, err := releaseMaker.MakeRelease()
+						Expect(release).To(BeNil())
+						Expect(err).To(HaveOccurred())
+						Expect(err.Error()).To(MatchRegexp("no such file or directory"))
+					})
+				})
+			})
+		})
+
+		Context("when the path is a file without a tgz extension", func() {
+			BeforeEach(func() {
+				var tmpFile *os.File
+				tmpDir, err := ioutil.TempDir("", "")
+				Expect(err).NotTo(HaveOccurred())
+				tmpFile, err = ioutil.TempFile(tmpDir, "bad_extension.png")
+				Expect(err).NotTo(HaveOccurred())
+				etcdURL = tmpFile.Name()
+			})
+
+			It("returns an error", func() {
+				release, err := releaseMaker.MakeRelease()
+				Expect(release).To(BeNil())
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(Equal("unrecognized etcd URL"))
+			})
 		})
 	})
 

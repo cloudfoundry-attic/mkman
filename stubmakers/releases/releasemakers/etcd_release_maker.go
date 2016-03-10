@@ -2,6 +2,7 @@ package releasemakers
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/gopkg.in/yaml.v2"
@@ -22,6 +23,18 @@ func NewEtcdReleaseMaker(tarballReader tarball.TarballReader, etcdPath string) R
 
 func (e *etcdReleaseMaker) MakeRelease() (*Release, error) {
 	var filePath string
+	fileInfo, err := os.Stat(e.etcdPath)
+	if err != nil {
+		return nil, err
+	}
+	if fileInfo.IsDir() {
+		return &Release{
+			Name:    "etcd",
+			URL:     e.etcdPath,
+			Version: "create",
+		}, nil
+	}
+
 	switch filepath.Ext(e.etcdPath) {
 	case ".tgz":
 		filePath = "file://" + e.etcdPath
