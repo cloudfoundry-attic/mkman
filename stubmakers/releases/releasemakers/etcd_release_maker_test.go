@@ -54,7 +54,6 @@ version: %s
 	})
 
 	It("returns a release stub", func() {
-		println(etcdURL)
 		etcdRelease, err := releaseMaker.MakeRelease()
 
 		Expect(err).NotTo(HaveOccurred())
@@ -146,6 +145,21 @@ version: %s
 			Expect(release).To(BeNil())
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(Equal("reading tarball failed"))
+		})
+	})
+
+	Context("when the release.MF file has invalid yaml", func() {
+		BeforeEach(func() {
+			tarballFileContents = []byte(fmt.Sprintf(`---
+name: &
+version: %s
+`, version))
+		})
+		It("should return an error", func() {
+			release, err := releaseMaker.MakeRelease()
+			Expect(release).To(BeNil())
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("yaml: line"))
 		})
 	})
 })
