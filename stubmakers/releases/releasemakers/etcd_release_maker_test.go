@@ -51,6 +51,7 @@ version: %s
 	It("gets the version from etcd's release.MF", func() {
 		releaseMaker.MakeRelease()
 		Expect(fakeTarballReader.ReadFileCallCount()).To(Equal(1))
+		Expect(fakeTarballReader.ReadFileArgsForCall(0)).To(Equal("./release.MF"))
 	})
 
 	Context("when the path extension is not .tgz", func() {

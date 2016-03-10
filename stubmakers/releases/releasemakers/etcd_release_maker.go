@@ -29,7 +29,7 @@ func (e *etcdReleaseMaker) MakeRelease() (*Release, error) {
 		return nil, fmt.Errorf("unrecognized etcd URL")
 	}
 
-	manifestContents, err := e.tarballReader.ReadFile("release.MF")
+	manifestContents, err := e.tarballReader.ReadFile("./release.MF")
 	if err != nil {
 		return nil, err
 	}

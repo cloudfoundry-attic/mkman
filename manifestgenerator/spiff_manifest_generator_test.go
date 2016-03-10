@@ -97,6 +97,7 @@ releases:
 
 		Expect(len(manifest.Releases)).To(BeNumerically(">=", 1))
 		Expect(manifest.Releases[0].Name).To(Equal("release-name"))
+		Expect(manifest.Releases[0].Version).To(Equal("123"))
 	})
 
 	Context("when the stemcell stub cannot be made", func() {

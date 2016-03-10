@@ -27,7 +27,7 @@ func SetupTest() *TestSetup {
 	fixturesDir := getFixturesDir()
 	cfReleasePath := getCfReleasePath()
 	stemcellPath := filepath.Join(fixturesDir, "no-image-stemcell.tgz")
-	etcdPath := filepath.Join(fixturesDir, "etcd-release.tgz")
+	etcdPath := filepath.Join(fixturesDir, "fake-etcd.tgz")
 	tempDir := setupTempDir()
 
 	By("Writing config paths")
