@@ -32,10 +32,9 @@ var _ = Describe("TemplateStubMaker", func() {
 
 		var templateStub struct {
 			Meta struct {
-				EtcdTemplates []struct {
-					Name    string `yaml:"name"`
-					Release string `yaml:"release"`
-				} `yaml:"etcd_templates"`
+				EtcdRelease struct {
+					Name string `yaml:"name"`
+				} `yaml:"etcd_release"`
 			} `yaml:"meta"`
 		}
 
@@ -44,12 +43,7 @@ var _ = Describe("TemplateStubMaker", func() {
 		err = yaml.Unmarshal(remainderBytes, &templateStub)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(templateStub.Meta.EtcdTemplates).To(HaveLen(2))
-
-		Expect(templateStub.Meta.EtcdTemplates[0].Name).To(Equal("etcd"))
-		Expect(templateStub.Meta.EtcdTemplates[0].Release).To(Equal("etcd"))
-		Expect(templateStub.Meta.EtcdTemplates[1].Name).To(Equal("etcd_metrics_server"))
-		Expect(templateStub.Meta.EtcdTemplates[1].Release).To(Equal("etcd"))
+		Expect(templateStub.Meta.EtcdRelease.Name).To(Equal("etcd"))
 	})
 })
 
