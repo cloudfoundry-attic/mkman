@@ -1,8 +1,10 @@
 package config
 
 import (
+	"fmt"
+
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/cloudfoundry/multierror"
 	"github.com/cloudfoundry/mkman/validators"
-	"github.com/cloudfoundry/multierror"
 )
 
 type Config struct {
@@ -14,98 +16,93 @@ type Config struct {
 }
 
 func (c Config) Validate() error {
-
 	errors := multierror.NewMultiError("config")
 	cfPath := validators.NewValidationTarget(c.CFPath, "cf")
-	cfPath.Add([]validators.Validator{
-		validators.And(
-			validators.NonEmptinessValidator(),
-			validators.AbsolutePathValidator(),
-			validators.And(
-				validators.ExistenceValidator(),
-				validators.DirectoryValidator(),
+	validator := validators.AllOf(
+		validators.NonEmpty(),
+		validators.AbsolutePath(),
+		validators.AllOf(
+			validators.ExistsOnFilesystem(
+				validators.Directory(),
 			),
 		),
-	})
+	)
 
-	err := cfPath.Validate()
-	if err.Length() > 0 {
+	err := cfPath.ValidateWith(validator)
+	if err != nil {
 		errors.Add(err)
 	}
 
 	stemcellPath := validators.NewValidationTarget(c.StemcellPath, "stemcell")
-	stemcellPath.Add([]validators.Validator{
-		validators.And(
-			validators.NonEmptinessValidator(),
-			validators.AbsolutePathValidator(),
-			validators.And(
-				validators.ExistenceValidator(),
-				validators.FileValidator(),
+	validator = validators.AllOf(
+		validators.NonEmpty(),
+		validators.AbsolutePath(),
+		validators.AllOf(
+			validators.ExistsOnFilesystem(
+				validators.File(),
 			),
 		),
-	})
+	)
 
-	err = stemcellPath.Validate()
-	if err.Length() > 0 {
+	err = stemcellPath.ValidateWith(validator)
+	if err != nil {
 		errors.Add(err)
 	}
 
 	etcdPath := validators.NewValidationTarget(c.EtcdPath, "etcd")
-	etcdPath.Add([]validators.Validator{
-		validators.And(
-			validators.NonEmptinessValidator(),
-			validators.Or(
-				validators.VersionAliasValidator([]string{"director-latest"}),
-				validators.And(
-					validators.AbsolutePathValidator(),
-					validators.ExistenceValidator(),
-					validators.Or(
-						validators.FileValidator(),
-						validators.DirectoryValidator(),
-					),
+	validator = validators.AllOf(
+		validators.NonEmpty(),
+		validators.AnyOf(
+			validators.VersionAlias([]string{"director-latest"}),
+			validators.AllOf(
+				validators.AbsolutePath(),
+				validators.ExistsOnFilesystem(
+					validators.File(),
+					validators.Directory(),
 				),
 			),
 		),
-	})
+	)
 
-	err = etcdPath.Validate()
-	if err.Length() > 0 {
+	err = etcdPath.ValidateWith(validator)
+	if err != nil {
 		errors.Add(err)
 	}
 
-	// err = validatePath(c.ConsulPath, "consul", dirType|fileType)
 	consulPath := validators.NewValidationTarget(c.ConsulPath, "consul")
-	consulPath.Add([]validators.Validator{
-		validators.Or(
-			validators.FileValidator(),
-			validators.DirectoryValidator(),
+	err = consulPath.ValidateWith(
+		validators.AllOf(
+			validators.NonEmpty(),
+			validators.AbsolutePath(),
+			validators.ExistsOnFilesystem(
+				validators.File(),
+				validators.Directory(),
+			),
 		),
-	})
-	err = consulPath.Validate()
+	)
 	if err != nil {
 		errors.Add(err)
 	}
 
 	stubErrs := multierror.NewMultiError("stubs")
-	foo := validators.NewValidationTarget(c.StubPaths, "stubs")
-	emptyErr := validators.NonEmptyArrayValidator().Validate(foo)
+	stubPaths := validators.NewValidationTarget(c.StubPaths, "stubs")
+	emptyErr := validators.NonEmptyArray().Validate(stubPaths)
 	if emptyErr != nil {
 		errors.Add(emptyErr)
 	} else {
-		for _, path := range c.StubPaths {
-			stubPath := validators.NewValidationTarget(path, path)
-			stubPath.Add([]validators.Validator{
-				validators.And(
-					validators.NonEmptinessValidator(),
-					validators.AbsolutePathValidator(),
-					validators.And(
-						validators.ExistenceValidator(),
-						validators.FileValidator(),
-					),
+		validator = validators.AllOf(
+			validators.NonEmpty(),
+			validators.AbsolutePath(),
+			validators.AllOf(
+				validators.ExistsOnFilesystem(
+					validators.File(),
 				),
-			})
-			err := stubPath.Validate()
-			if err.Length() > 0 {
+			),
+		)
+		for i, path := range c.StubPaths {
+			stubPath := validators.NewValidationTarget(path, fmt.Sprintf("stub at index %d", i))
+			err := stubPath.ValidateWith(validator)
+			if err != nil {
 				stubErrs.Add(err)
 			}
 		}

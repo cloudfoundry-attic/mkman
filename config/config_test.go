@@ -163,7 +163,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(MatchRegexp("must be present on filesystem: %s", c.CFPath))
+					Expect(err.Error()).To(MatchRegexp("cf must be a path to a directory that exists: '%s'", c.CFPath))
 				})
 			})
 
@@ -179,7 +179,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("value must be path to directory"))
+					Expect(err.Error()).To(ContainSubstring("value must be a directory: %s", c.CFPath))
 					Expect(err.Error()).To(ContainSubstring(c.CFPath))
 				})
 			})
@@ -219,7 +219,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(MatchRegexp("must be present on filesystem: %s", c.StemcellPath))
+					Expect(err.Error()).To(MatchRegexp("stemcell must be a path to a file that exists: '%s'", c.StemcellPath))
 				})
 			})
 
@@ -235,7 +235,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("value must be path to file"))
+					Expect(err.Error()).To(ContainSubstring("value must be a file: %s", c.StemcellPath))
 					Expect(err.Error()).To(ContainSubstring(c.StemcellPath))
 				})
 			})
@@ -275,7 +275,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(MatchRegexp("present on filesystem: %s", c.EtcdPath))
+					Expect(err.Error()).To(MatchRegexp("value must be valid version alias or a path to a file or a directory that exists: %s", c.EtcdPath))
 				})
 			})
 		})
@@ -289,7 +289,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("value is required"))
+					Expect(err.Error()).To(ContainSubstring("value must be non-empty"))
 				})
 			})
 
@@ -301,7 +301,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("value must be absolute path to file or directory"))
+					Expect(err.Error()).To(MatchRegexp("value must be absolute path: '%s'", c.ConsulPath))
 					Expect(err.Error()).To(ContainSubstring(c.ConsulPath))
 				})
 			})
@@ -314,7 +314,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(ContainSubstring("directory does not exist"))
+					Expect(err.Error()).To(MatchRegexp("consul must be a path to a file or a directory that exists: '%s'", c.ConsulPath))
 					Expect(err.Error()).To(ContainSubstring(c.ConsulPath))
 				})
 			})
@@ -365,7 +365,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(MatchRegexp("must be present on filesystem: %s", c.StubPaths[0]))
+					Expect(err.Error()).To(MatchRegexp("must be a path to a file that exists: '%s'", c.StubPaths[0]))
 				})
 			})
 
@@ -381,7 +381,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(MatchRegexp("must be path to file.*%s", c.StubPaths[0]))
+					Expect(err.Error()).To(MatchRegexp("value must be a file.*%s", c.StubPaths[0]))
 				})
 			})
 		})
@@ -399,10 +399,10 @@ var _ = Describe("Config", func() {
 
 					Expect(err.Error()).To(ContainSubstring("value must be non-empty"))
 
-					Expect(err.Error()).To(ContainSubstring("must be present on filesystem:"))
+					Expect(err.Error()).To(ContainSubstring("must be a path to a file that exists:"))
 					Expect(err.Error()).To(ContainSubstring(c.StubPaths[0]))
 
-					Expect(err.Error()).To(ContainSubstring("must be present on filesystem:"))
+					Expect(err.Error()).To(ContainSubstring("must be a path to a file that exists:"))
 					Expect(err.Error()).To(ContainSubstring(c.StubPaths[1]))
 				})
 			})

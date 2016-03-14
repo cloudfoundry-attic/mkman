@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/cloudfoundry/mkman",
-	"GoVersion": "go1.5.1",
+	"GoVersion": "go1.5.3",
 	"Packages": [
 		"./..."
 	],
@@ -11,8 +11,8 @@
 		},
 		{
 			"ImportPath": "github.com/jessevdk/go-flags",
-			"Comment": "v1-328-gd91b7c5",
-			"Rev": "d91b7c5a5ce0b1d99d765ec3fb20ab590e52ddcb"
+			"Comment": "v1-330-g97448c9",
+			"Rev": "97448c91aac742cbca3d020b3e769013a420a06f"
 		},
 		{
 			"ImportPath": "github.com/onsi/ginkgo",

@@ -25,5 +25,5 @@ var _ = AfterSuite(func() {
 
 func TestMain(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "mkman executable test suite")
+	RunSpecs(t, "Mkman Executable Test Suite")
 }

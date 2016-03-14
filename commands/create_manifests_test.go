@@ -115,7 +115,7 @@ var _ = Describe("CreateManifestsCommand", func() {
 		It("returns an error", func() {
 			err := cmd.Execute(args)
 			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("value is required"))
+			Expect(err.Error()).To(ContainSubstring("value must be non-empty"))
 		})
 	})
 
