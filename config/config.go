@@ -1,8 +1,8 @@
 package config
 
 import (
+	"github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/cloudfoundry/multierror"
 	"github.com/cloudfoundry/mkman/validators"
-	"github.com/cloudfoundry/multierror"
 )
 
 type Config struct {
