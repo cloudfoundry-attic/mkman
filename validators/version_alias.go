@@ -2,21 +2,21 @@ package validators
 
 import "fmt"
 
-type versionAliasValidator struct {
+type versionAlias struct {
 	versionAliases []string
 }
 
-func VersionAliasValidator(versionAliases []string) Validator {
-	return &versionAliasValidator{
+func VersionAlias(versionAliases []string) Validator {
+	return &versionAlias{
 		versionAliases: versionAliases,
 	}
 }
 
-func (v *versionAliasValidator) ComposableName() string {
+func (v *versionAlias) ComposableName() string {
 	return "valid version alias"
 }
 
-func (v *versionAliasValidator) Validate(vt ValidationTarget) error {
+func (v *versionAlias) Validate(vt ValidationTarget) error {
 	for _, element := range v.versionAliases {
 		convertedObject, ok := vt.object.(string)
 		if !ok {

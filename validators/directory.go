@@ -5,18 +5,18 @@ import (
 	"os"
 )
 
-type directoryValidator struct {
+type directory struct {
 }
 
-func DirectoryValidator() Validator {
-	return &directoryValidator{}
+func Directory() Validator {
+	return &directory{}
 }
 
-func (a *directoryValidator) ComposableName() string {
+func (a *directory) ComposableName() string {
 	return "path to directory"
 }
 
-func (a *directoryValidator) Validate(vt ValidationTarget) error {
+func (a *directory) Validate(vt ValidationTarget) error {
 	convertedObject, ok := vt.object.(string)
 	if !ok {
 		panic(fmt.Sprintf("Expected string type for %s", vt.name))

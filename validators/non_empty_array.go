@@ -2,17 +2,17 @@ package validators
 
 import "fmt"
 
-type nonEmptyArrayValidator struct{}
+type nonEmptyArray struct{}
 
-func NonEmptyArrayValidator() Validator {
-	return &nonEmptyArrayValidator{}
+func NonEmptyArray() Validator {
+	return &nonEmptyArray{}
 }
 
-func (e *nonEmptyArrayValidator) ComposableName() string {
+func (e *nonEmptyArray) ComposableName() string {
 	return "non-empty"
 }
 
-func (ev *nonEmptyArrayValidator) Validate(vt ValidationTarget) error {
+func (ev *nonEmptyArray) Validate(vt ValidationTarget) error {
 	switch vt.object.(type) {
 	case []string:
 		v := vt.object.([]string)

@@ -5,18 +5,18 @@ import (
 	"path/filepath"
 )
 
-type absolutePathValidator struct {
+type absolutePath struct {
 }
 
-func AbsolutePathValidator() Validator {
-	return &absolutePathValidator{}
+func AbsolutePath() Validator {
+	return &absolutePath{}
 }
 
-func (a *absolutePathValidator) ComposableName() string {
+func (a *absolutePath) ComposableName() string {
 	return "absolute path"
 }
 
-func (a *absolutePathValidator) Validate(vt ValidationTarget) error {
+func (a *absolutePath) Validate(vt ValidationTarget) error {
 	err := validateIsAbsPath(vt)
 	if err != nil {
 		return err

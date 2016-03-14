@@ -2,17 +2,17 @@ package validators
 
 import "fmt"
 
-type nonEmptinessValidator struct{}
+type nonEmpty struct{}
 
-func NonEmptinessValidator() Validator {
-	return &nonEmptinessValidator{}
+func NonEmpty() Validator {
+	return &nonEmpty{}
 }
 
-func (e *nonEmptinessValidator) ComposableName() string {
+func (e *nonEmpty) ComposableName() string {
 	return "non-empty"
 }
 
-func (ev *nonEmptinessValidator) Validate(vt ValidationTarget) error {
+func (ev *nonEmpty) Validate(vt ValidationTarget) error {
 	convertedObject, ok := vt.object.(string)
 	if !ok {
 		panic(fmt.Sprintf("Expected string type for %s", vt.name))

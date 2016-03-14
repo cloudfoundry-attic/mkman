@@ -5,18 +5,18 @@ import (
 	"os"
 )
 
-type fileValidator struct {
+type file struct {
 }
 
-func FileValidator() Validator {
-	return &fileValidator{}
+func File() Validator {
+	return &file{}
 }
 
-func (a *fileValidator) ComposableName() string {
+func (a *file) ComposableName() string {
 	return "path to file"
 }
 
-func (a *fileValidator) Validate(vt ValidationTarget) error {
+func (a *file) Validate(vt ValidationTarget) error {
 	convertedObject, ok := vt.object.(string)
 	if !ok {
 		panic(fmt.Sprintf("Expected string type for %s", vt.name))

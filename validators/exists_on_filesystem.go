@@ -5,18 +5,18 @@ import (
 	"os"
 )
 
-type existenceValidator struct {
+type existsOnFilesystem struct {
 }
 
-func ExistenceValidator() Validator {
-	return &existenceValidator{}
+func ExistsOnFilesystem() Validator {
+	return &existsOnFilesystem{}
 }
 
-func (ev *existenceValidator) ComposableName() string {
+func (ev *existsOnFilesystem) ComposableName() string {
 	return "present on filesystem"
 }
 
-func (ev *existenceValidator) Validate(vt ValidationTarget) error {
+func (ev *existsOnFilesystem) Validate(vt ValidationTarget) error {
 	convertedObject, ok := vt.object.(string)
 	if !ok {
 		panic(fmt.Sprintf("Expected string type for %s", vt.name))

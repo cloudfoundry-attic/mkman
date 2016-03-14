@@ -5,15 +5,15 @@ import (
 	"strings"
 )
 
-type orValidator struct {
+type anyOf struct {
 	validators []Validator
 }
 
-func Or(validators ...Validator) Validator {
-	return &orValidator{validators: validators}
+func AnyOf(validators ...Validator) Validator {
+	return &anyOf{validators: validators}
 }
 
-func (o *orValidator) ComposableName() string {
+func (o *anyOf) ComposableName() string {
 	var name, delimiter string
 	delimiter = " or "
 	for _, v := range o.validators {
@@ -22,7 +22,7 @@ func (o *orValidator) ComposableName() string {
 	return strings.TrimSuffix(name, delimiter)
 }
 
-func (o *orValidator) Validate(vt ValidationTarget) error {
+func (o *anyOf) Validate(vt ValidationTarget) error {
 	for _, v := range o.validators {
 		err := v.Validate(vt)
 		if err == nil {

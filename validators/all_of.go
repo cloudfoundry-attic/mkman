@@ -2,20 +2,20 @@ package validators
 
 import "fmt"
 
-type andValidator struct {
+type allOf struct {
 	validators  []Validator
 	firstFailed Validator
 }
 
-func And(validators ...Validator) Validator {
-	return &andValidator{validators: validators}
+func AllOf(validators ...Validator) Validator {
+	return &allOf{validators: validators}
 }
 
-func (a *andValidator) ComposableName() string {
+func (a *allOf) ComposableName() string {
 	return a.firstFailed.ComposableName()
 }
 
-func (a *andValidator) Validate(vt ValidationTarget) error {
+func (a *allOf) Validate(vt ValidationTarget) error {
 	for _, v := range a.validators {
 		err := v.Validate(vt)
 		if err != nil {
