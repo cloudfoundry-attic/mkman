@@ -13,11 +13,11 @@ func Or(validators ...Validator) Validator {
 	return &orValidator{validators: validators}
 }
 
-func (o *orValidator) Name() string {
+func (o *orValidator) ComposableName() string {
 	var name, delimiter string
 	delimiter = " or "
 	for _, v := range o.validators {
-		name += v.Name() + delimiter
+		name += v.ComposableName() + delimiter
 	}
 	return strings.TrimSuffix(name, delimiter)
 }
@@ -29,5 +29,5 @@ func (o *orValidator) Validate(vt ValidationTarget) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("value must be %s: %s", o.Name(), vt.object)
+	return fmt.Errorf("value must be %s: %s", o.ComposableName(), vt.object)
 }

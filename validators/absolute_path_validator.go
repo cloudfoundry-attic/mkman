@@ -8,11 +8,11 @@ import (
 type absolutePathValidator struct {
 }
 
-func NewAbsolutePathValidator() Validator {
+func AbsolutePathValidator() Validator {
 	return &absolutePathValidator{}
 }
 
-func (a *absolutePathValidator) Name() string {
+func (a *absolutePathValidator) ComposableName() string {
 	return "absolute path"
 }
 
@@ -25,7 +25,12 @@ func (a *absolutePathValidator) Validate(vt ValidationTarget) error {
 }
 
 func validateIsAbsPath(vt ValidationTarget) error {
-	if filepath.IsAbs(vt.object) {
+	convertedObject, ok := vt.object.(string)
+	if !ok {
+		panic(fmt.Sprintf("Expected string type for %s", vt.name))
+	}
+
+	if filepath.IsAbs(convertedObject) {
 		return nil
 	}
 	return fmt.Errorf("value must be absolute path: '%s'", vt.object)

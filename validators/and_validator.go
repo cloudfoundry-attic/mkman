@@ -11,8 +11,8 @@ func And(validators ...Validator) Validator {
 	return &andValidator{validators: validators}
 }
 
-func (a *andValidator) Name() string {
-	return a.firstFailed.Name()
+func (a *andValidator) ComposableName() string {
+	return a.firstFailed.ComposableName()
 }
 
 func (a *andValidator) Validate(vt ValidationTarget) error {
@@ -20,7 +20,7 @@ func (a *andValidator) Validate(vt ValidationTarget) error {
 		err := v.Validate(vt)
 		if err != nil {
 			a.firstFailed = v
-			return fmt.Errorf("%s", v.Name())
+			return fmt.Errorf("value must be %s: %s", v.ComposableName(), vt.object)
 		}
 	}
 	return nil

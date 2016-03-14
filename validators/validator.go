@@ -4,11 +4,11 @@ import "github.com/cloudfoundry/multierror"
 
 type ValidationTarget struct {
 	name       string
-	object     string
+	object     interface{}
 	validators []Validator
 }
 
-func NewValidationTarget(object, name string) ValidationTarget {
+func NewValidationTarget(object interface{}, name string) ValidationTarget {
 	return ValidationTarget{
 		name:       name,
 		object:     object,
@@ -35,7 +35,7 @@ func (vt *ValidationTarget) Add(validators []Validator) {
 
 type Validator interface {
 	Validate(vt ValidationTarget) error
-	Name() string
+	ComposableName() string
 }
 
 type Validation struct {
