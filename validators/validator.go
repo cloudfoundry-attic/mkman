@@ -3,34 +3,24 @@ package validators
 import "github.com/cloudfoundry/multierror"
 
 type ValidationTarget struct {
-	name       string
-	object     interface{}
-	validators []Validator
+	name   string
+	object interface{}
 }
 
 func NewValidationTarget(object interface{}, name string) ValidationTarget {
 	return ValidationTarget{
-		name:       name,
-		object:     object,
-		validators: []Validator{},
+		name:   name,
+		object: object,
 	}
 }
 
-func (vt ValidationTarget) Validate() *multierror.MultiError {
+func (vt ValidationTarget) ValidateWith(validator Validator) *multierror.MultiError {
 	errs := multierror.NewMultiError(vt.name)
-	for _, v := range vt.validators {
-		err := v.Validate(vt)
-		if err != nil {
-			errs.Add(err)
-		}
+	err := validator.Validate(vt)
+	if err != nil {
+		errs.Add(err)
 	}
 	return errs
-}
-
-func (vt *ValidationTarget) Add(validators []Validator) {
-	for _, v := range validators {
-		vt.validators = append(vt.validators, v)
-	}
 }
 
 type Validator interface {
