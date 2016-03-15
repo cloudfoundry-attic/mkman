@@ -95,7 +95,7 @@ version: %s
 
 				Expect(err).NotTo(HaveOccurred())
 				Expect(etcdRelease.Name).To(Equal("etcd"))
-				Expect(etcdRelease.URL).To(Equal(etcdURL))
+				Expect(etcdRelease.URL).To(Equal("file://" + etcdURL))
 				Expect(etcdRelease.Version).To(Equal(version))
 			})
 

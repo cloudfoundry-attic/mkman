@@ -30,7 +30,7 @@ func (e *etcdReleaseMaker) MakeRelease() (*Release, error) {
 	if fileInfo.IsDir() {
 		return &Release{
 			Name:    "etcd",
-			URL:     e.etcdPath,
+			URL:     "file://" + e.etcdPath,
 			Version: "create",
 		}, nil
 	}
