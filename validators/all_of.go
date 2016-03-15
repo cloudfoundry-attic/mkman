@@ -12,6 +12,9 @@ func AllOf(validators ...Validator) Validator {
 }
 
 func (a *allOf) ComposableName() string {
+	if a.firstFailed == nil {
+		return ""
+	}
 	return a.firstFailed.ComposableName()
 }
 

@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/ginkgo"
-	. "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/onsi/gomega"
+	. "github.com/cloudfoundry/mkman/godeps/_workspace/src/github.com/onsi/ginkgo"
+	. "github.com/cloudfoundry/mkman/godeps/_workspace/src/github.com/onsi/gomega"
 	"github.com/cloudfoundry/mkman/config"
 )
 

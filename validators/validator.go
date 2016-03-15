@@ -1,6 +1,6 @@
 package validators
 
-import "github.com/cloudfoundry/multierror"
+import "github.com/cloudfoundry/mkman/Godeps/_workspace/src/github.com/cloudfoundry/multierror"
 
 type ValidationTarget struct {
 	name   string
@@ -15,12 +15,13 @@ func NewValidationTarget(object interface{}, name string) ValidationTarget {
 }
 
 func (vt ValidationTarget) ValidateWith(validator Validator) *multierror.MultiError {
-	errs := multierror.NewMultiError(vt.name)
 	err := validator.Validate(vt)
 	if err != nil {
+	  errs := multierror.NewMultiError(vt.name)
 		errs.Add(err)
+		return errs
 	}
-	return errs
+	return nil
 }
 
 type Validator interface {

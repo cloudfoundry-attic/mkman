@@ -27,6 +27,8 @@ func (a *absolutePath) Validate(vt ValidationTarget) error {
 func validateIsAbsPath(vt ValidationTarget) error {
 	convertedObject, ok := vt.object.(string)
 	if !ok {
+		// We don't want to return an error here as it would look like a validation
+		// failure instead of a coding error.
 		panic(fmt.Sprintf("Expected string type for %s", vt.name))
 	}
 
