@@ -35,6 +35,9 @@ var _ = Describe("TemplateStubMaker", func() {
 				EtcdRelease struct {
 					Name string `yaml:"name"`
 				} `yaml:"etcd_release"`
+				ConsulRelease struct {
+					Name string `yaml:"name"`
+				} `yaml:"consul_release"`
 			} `yaml:"meta"`
 		}
 
@@ -44,6 +47,7 @@ var _ = Describe("TemplateStubMaker", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(templateStub.Meta.EtcdRelease.Name).To(Equal("etcd"))
+		Expect(templateStub.Meta.ConsulRelease.Name).To(Equal("consul"))
 	})
 })
 

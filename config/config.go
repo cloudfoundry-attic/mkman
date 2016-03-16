@@ -12,6 +12,7 @@ type Config struct {
 	CFPath       string   `yaml:"cf"`
 	StemcellPath string   `yaml:"stemcell"`
 	EtcdPath     string   `yaml:"etcd"`
+	ConsulPath   string   `yaml:"consul"`
 	StubPaths    []string `yaml:"stubs"`
 }
 
@@ -35,6 +36,11 @@ func (c Config) Validate() error {
 	}
 
 	err = validatePath(c.EtcdPath, "etcd", fileType|dirType)
+	if err != nil {
+		errors.Add(err)
+	}
+
+	err = validatePath(c.ConsulPath, "consul", dirType|fileType)
 	if err != nil {
 		errors.Add(err)
 	}

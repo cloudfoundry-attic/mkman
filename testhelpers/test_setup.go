@@ -16,6 +16,7 @@ type TestSetup struct {
 	cfReleasePath string
 	stemcellPath  string
 	etcdPath      string
+	consulPath    string
 
 	TempDirPath         string
 	ExampleManifestPath string
@@ -28,6 +29,7 @@ func SetupTest() *TestSetup {
 	cfReleasePath := getCfReleasePath()
 	stemcellPath := filepath.Join(fixturesDir, "no-image-stemcell.tgz")
 	etcdPath := filepath.Join(fixturesDir, "fake-etcd.tgz")
+	consulPath := filepath.Join(fixturesDir, "fake-consul.tgz")
 	tempDir := setupTempDir()
 
 	By("Writing config paths")
@@ -38,12 +40,14 @@ func SetupTest() *TestSetup {
   "cf": "%s",
   "stemcell": "%s",
 	"etcd": "%s",
+  "consul": "%s",
   "stubs": ["%s"]
 }
 `,
 		cfReleasePath,
 		stemcellPath,
 		etcdPath,
+		consulPath,
 		stubPath,
 	)
 
@@ -52,6 +56,7 @@ func SetupTest() *TestSetup {
 		cfReleasePath: cfReleasePath,
 		stemcellPath:  stemcellPath,
 		etcdPath:      etcdPath,
+		consulPath:    consulPath,
 
 		TempDirPath:    tempDir,
 		ConfigPath:     configPath,
@@ -76,6 +81,7 @@ func (setup *TestSetup) createExampleManifest() {
 	templateContents = strings.Replace(string(templateContents), "$CF_RELEASE_DIR", setup.cfReleasePath, -1)
 	templateContents = strings.Replace(string(templateContents), "$STEMCELL_PATH", setup.stemcellPath, -1)
 	templateContents = strings.Replace(string(templateContents), "$ETCD_RELEASE_PATH", setup.etcdPath, -1)
+	templateContents = strings.Replace(string(templateContents), "$CONSUL_RELEASE_PATH", setup.consulPath, -1)
 
 	exampleManifestPath := filepath.Join(setup.TempDirPath, "manifest.yml")
 	err = ioutil.WriteFile(exampleManifestPath, []byte(templateContents), os.ModePerm)

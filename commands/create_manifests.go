@@ -50,14 +50,17 @@ func (command *CreateManifestsCommand) Execute(args []string) error {
 
 	stemcellTarballReader := tarball.NewTarballReader(config.StemcellPath)
 	etcdTarballReader := tarball.NewTarballReader(config.EtcdPath)
+	consulTarballReader := tarball.NewTarballReader(config.ConsulPath)
 
 	cfReleaseMaker := releasemakers.NewCfReleaseMaker(config.CFPath)
 	etcdReleaseMaker := releasemakers.NewEtcdReleaseMaker(etcdTarballReader, config.EtcdPath)
+	consulReleaseMaker := releasemakers.NewConsulReleaseMaker(consulTarballReader, config.ConsulPath)
 
 	stemcellStubMaker := stemcellStubMakers.NewStemcellStubMaker(stemcellTarballReader, config.StemcellPath)
 	releaseStubMaker := releaseStubMakers.NewReleaseStubMaker([]releasemakers.ReleaseMaker{
 		cfReleaseMaker,
 		etcdReleaseMaker,
+		consulReleaseMaker,
 	})
 	jobTemplateStubMaker := jobtemplates.NewJobTemplateStubMaker()
 
@@ -70,6 +73,7 @@ func (command *CreateManifestsCommand) Execute(args []string) error {
 
 	manifest, err := manifestGenerator.GenerateManifest()
 	if err != nil {
+		fmt.Println(err.Error())
 		return err
 	}
 

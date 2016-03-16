@@ -7,11 +7,12 @@ type jobTemplateStub struct {
 }
 
 type meta struct {
-	EtcdRelease etcdRelease `yaml:"etcd_release,omitempty"`
-	Merge       string      `yaml:"<<"`
+	EtcdRelease   release `yaml:"etcd_release,omitempty"`
+	ConsulRelease release `yaml:"consul_release,omitempty"`
+	Merge         string  `yaml:"<<"`
 }
 
-type etcdRelease struct {
+type release struct {
 	Name string `yaml:"name"`
 }
 
@@ -30,8 +31,11 @@ func (t *jobTemplateStubMaker) MakeStub() (string, error) {
 	jobTemplate := jobTemplateStub{
 		Meta: meta{
 			Merge: "(( merge ))",
-			EtcdRelease: etcdRelease{
+			EtcdRelease: release{
 				Name: "etcd",
+			},
+			ConsulRelease: release{
+				Name: "consul",
 			},
 		},
 	}

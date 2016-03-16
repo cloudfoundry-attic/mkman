@@ -34,6 +34,10 @@ var _ = Describe("Config", func() {
 		err = ioutil.WriteFile(etcdPath, []byte("some content"), os.ModePerm)
 		Expect(err).NotTo(HaveOccurred())
 
+		consulPath := filepath.Join(tempDir, "consul.tgz")
+		err = ioutil.WriteFile(consulPath, []byte("some content"), os.ModePerm)
+		Expect(err).NotTo(HaveOccurred())
+
 		stubPath0 := filepath.Join(tempDir, "stub0.yml")
 		err = ioutil.WriteFile(stubPath0, []byte("---"), os.ModePerm)
 		Expect(err).NotTo(HaveOccurred())
@@ -46,6 +50,7 @@ var _ = Describe("Config", func() {
 			CFPath:       cfPath,
 			StemcellPath: stemcellPath,
 			EtcdPath:     etcdPath,
+			ConsulPath:   consulPath,
 			StubPaths:    []string{stubPath0, stubPath1},
 		}
 	})
@@ -75,21 +80,38 @@ var _ = Describe("Config", func() {
 		})
 	})
 
+	Context("when the consul path is, in fact, a directory", func() {
+		BeforeEach(func() {
+			consulPath := filepath.Join(tempDir, "consul-as-a-dir")
+			err := os.MkdirAll(consulPath, os.ModePerm)
+			Expect(err).NotTo(HaveOccurred())
+
+			c.ConsulPath = consulPath
+		})
+
+		It("should not return an error", func() {
+			err := c.Validate()
+			Expect(err).NotTo(HaveOccurred())
+		})
+	})
+
 	Describe("Handling errors", func() {
 		Describe("Error Headers", func() {
 			BeforeEach(func() {
 				c.CFPath = ""
 				c.StemcellPath = ""
 				c.EtcdPath = ""
+				c.ConsulPath = ""
 				c.StubPaths = []string{""}
 			})
 
 			It("Displays the fields the errors happened on", func() {
 				err := c.Validate()
-				Expect(err.Error()).To(ContainSubstring("there were 4 errors with 'config':"))
+				Expect(err.Error()).To(ContainSubstring("there were 5 errors with 'config':"))
 				Expect(err.Error()).To(ContainSubstring("there was 1 error with 'cf':"))
 				Expect(err.Error()).To(ContainSubstring("there was 1 error with 'stemcell':"))
 				Expect(err.Error()).To(ContainSubstring("there was 1 error with 'etcd':"))
+				Expect(err.Error()).To(ContainSubstring("there was 1 error with 'consul':"))
 				Expect(err.Error()).To(ContainSubstring("there was 1 error with 'stubs':"))
 			})
 		})
@@ -246,9 +268,47 @@ var _ = Describe("Config", func() {
 					Expect(err.Error()).To(ContainSubstring(c.EtcdPath))
 				})
 			})
-
 		})
 
+		Describe("on the ConsulPath", func() {
+			Context("when it is an empty string", func() {
+				BeforeEach(func() {
+					c.ConsulPath = ""
+				})
+
+				It("should return an error", func() {
+					err := c.Validate()
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(ContainSubstring("value is required"))
+				})
+			})
+
+			Context("when it is not an absolute path", func() {
+				BeforeEach(func() {
+					c.ConsulPath = "./path/to/consul"
+				})
+
+				It("should return an error", func() {
+					err := c.Validate()
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(ContainSubstring("value must be absolute path to file or directory"))
+					Expect(err.Error()).To(ContainSubstring(c.ConsulPath))
+				})
+			})
+
+			Context("when the consul file does not exist", func() {
+				BeforeEach(func() {
+					c.ConsulPath = "/path/to/invalid/consul"
+				})
+
+				It("should return an error", func() {
+					err := c.Validate()
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(ContainSubstring("directory does not exist"))
+					Expect(err.Error()).To(ContainSubstring(c.ConsulPath))
+				})
+			})
+		})
 		Describe("on the StubPaths", func() {
 			Context("when there are no stub paths", func() {
 				BeforeEach(func() {
