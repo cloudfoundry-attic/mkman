@@ -1328,6 +1328,8 @@ properties:
       password: router
       port: null
       user: router
+  routing_api:
+    enabled: null
   smoke_tests: null
   ssl:
     skip_cert_verify: false
