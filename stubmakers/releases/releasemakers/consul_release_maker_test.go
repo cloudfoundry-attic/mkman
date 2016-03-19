@@ -54,50 +54,69 @@ version: %s
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	It("returns a release stub", func() {
-		consulRelease, err := releaseMaker.MakeRelease()
+	Context("when consul is a version alias", func() {
+		JustBeforeEach(func() {
+			consulURL = "director-latest"
+			fakeTarballReader.ReadFileReturns(tarballFileContents, tarballErr)
+			releaseMaker = releasemakers.NewConsulReleaseMaker(fakeTarballReader, consulURL)
+		})
 
-		Expect(err).NotTo(HaveOccurred())
-		Expect(consulRelease.Name).To(Equal("consul"))
-		Expect(consulRelease.URL).To(Equal("file://" + consulURL))
-		Expect(consulRelease.Version).To(Equal(version))
-	})
+		It("returns a release stub", func() {
+			consulRelease, err := releaseMaker.MakeRelease()
 
-	It("gets the version from consul's release.MF", func() {
-		releaseMaker.MakeRelease()
-		Expect(fakeTarballReader.ReadFileCallCount()).To(Equal(1))
-		Expect(fakeTarballReader.ReadFileArgsForCall(0)).To(Equal("./release.MF"))
-	})
-
-	Context("when the path extension is not .tgz", func() {
-		BeforeEach(func() {
-			var tmpFile *os.File
-			tmpDir, err := ioutil.TempDir("", "")
 			Expect(err).NotTo(HaveOccurred())
-			tmpFile, err = ioutil.TempFile(tmpDir, "bad_extension.png")
-			Expect(err).NotTo(HaveOccurred())
-			consulURL = tmpFile.Name()
-		})
-
-		It("returns an error", func() {
-			release, err := releaseMaker.MakeRelease()
-			Expect(release).To(BeNil())
-			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(Equal("unrecognized consul URL"))
+			Expect(consulRelease.Name).To(Equal("consul"))
+			Expect(consulRelease.URL).To(Equal(""))
+			Expect(consulRelease.Version).To(Equal("latest"))
 		})
 	})
 
-	Context("when the tarball reader returns an error", func() {
-		BeforeEach(func() {
-			tarballFileContents = nil
-			tarballErr = fmt.Errorf("reading tarball failed")
+	Context("when consul is a path to something", func() {
+		It("returns a release stub", func() {
+			consulRelease, err := releaseMaker.MakeRelease()
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(consulRelease.Name).To(Equal("consul"))
+			Expect(consulRelease.URL).To(Equal("file://" + consulURL))
+			Expect(consulRelease.Version).To(Equal(version))
 		})
 
-		It("forwards the error", func() {
-			release, err := releaseMaker.MakeRelease()
-			Expect(release).To(BeNil())
-			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(Equal("reading tarball failed"))
+		It("gets the version from consul's release.MF", func() {
+			releaseMaker.MakeRelease()
+			Expect(fakeTarballReader.ReadFileCallCount()).To(Equal(1))
+			Expect(fakeTarballReader.ReadFileArgsForCall(0)).To(Equal("./release.MF"))
+		})
+
+		Context("when the path extension is not .tgz", func() {
+			BeforeEach(func() {
+				var tmpFile *os.File
+				tmpDir, err := ioutil.TempDir("", "")
+				Expect(err).NotTo(HaveOccurred())
+				tmpFile, err = ioutil.TempFile(tmpDir, "bad_extension.png")
+				Expect(err).NotTo(HaveOccurred())
+				consulURL = tmpFile.Name()
+			})
+
+			It("returns an error", func() {
+				release, err := releaseMaker.MakeRelease()
+				Expect(release).To(BeNil())
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(Equal("unrecognized consul URL"))
+			})
+		})
+
+		Context("when the tarball reader returns an error", func() {
+			BeforeEach(func() {
+				tarballFileContents = nil
+				tarballErr = fmt.Errorf("reading tarball failed")
+			})
+
+			It("forwards the error", func() {
+				release, err := releaseMaker.MakeRelease()
+				Expect(release).To(BeNil())
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(Equal("reading tarball failed"))
+			})
 		})
 	})
 })

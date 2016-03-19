@@ -73,10 +73,15 @@ func (c Config) Validate() error {
 	err = consulPath.ValidateWith(
 		validators.AllOf(
 			validators.NonEmpty(),
-			validators.AbsolutePath(),
-			validators.ExistsOnFilesystem(
-				validators.File(),
-				validators.Directory(),
+			validators.AnyOf(
+				validators.VersionAlias([]string{"director-latest"}),
+				validators.AllOf(
+					validators.AbsolutePath(),
+					validators.ExistsOnFilesystem(
+						validators.File(),
+						validators.Directory(),
+					),
+				),
 			),
 		),
 	)

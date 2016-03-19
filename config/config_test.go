@@ -301,7 +301,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(MatchRegexp("value must be absolute path: '%s'", c.ConsulPath))
+					Expect(err.Error()).To(MatchRegexp(".*must be valid version alias or absolute path: %s", c.ConsulPath))
 					Expect(err.Error()).To(ContainSubstring(c.ConsulPath))
 				})
 			})
@@ -314,7 +314,7 @@ var _ = Describe("Config", func() {
 				It("should return an error", func() {
 					err := c.Validate()
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(MatchRegexp("consul must be a path to a file or a directory that exists: '%s'", c.ConsulPath))
+					Expect(err.Error()).To(MatchRegexp("value must be valid version alias or a path to a file or a directory that exists: %s", c.ConsulPath))
 					Expect(err.Error()).To(ContainSubstring(c.ConsulPath))
 				})
 			})

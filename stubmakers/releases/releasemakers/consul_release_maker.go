@@ -22,6 +22,16 @@ func NewConsulReleaseMaker(tarballReader tarball.TarballReader, consulPath strin
 }
 
 func (c *consulReleaseMaker) MakeRelease() (*Release, error) {
+	if c.consulPath == "director-latest" {
+		return &Release{
+			Name:    "consul",
+			Version: "latest",
+		}, nil
+	}
+	return c.handlePath()
+}
+
+func (c *consulReleaseMaker) handlePath() (*Release, error) {
 	var filePath string
 	fileInfo, err := os.Stat(c.consulPath)
 	if err != nil {
