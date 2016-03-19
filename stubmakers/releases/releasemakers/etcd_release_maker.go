@@ -22,6 +22,16 @@ func NewEtcdReleaseMaker(tarballReader tarball.TarballReader, etcdPath string) R
 }
 
 func (e *etcdReleaseMaker) MakeRelease() (*Release, error) {
+	if e.etcdPath == "director-latest" {
+		return &Release{
+			Name:    "etcd",
+			Version: "latest",
+		}, nil
+	}
+	return e.handlePath()
+}
+
+func (e *etcdReleaseMaker) handlePath() (*Release, error) {
 	var filePath string
 	fileInfo, err := os.Stat(e.etcdPath)
 	if err != nil {
