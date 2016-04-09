@@ -23,3 +23,4 @@ Install and run `mkman` with the following commands:
 go get github.com/pivotal-cf-experimental/mkman
 mkman
 ```
+test
